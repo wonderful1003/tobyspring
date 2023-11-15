@@ -11,7 +11,7 @@ public class UserDaoTest {
 		UserDao dao = new UserDao(connectionMaker);
 		
 		User user = new User();
-		user.setId("wonderful");
+		user.setId("wonderful3");
 		user.setName("방승현");
 		user.setPassword("married");
 		

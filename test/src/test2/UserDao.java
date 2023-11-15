@@ -6,6 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.springframework.context.annotation.Configuration;
+@Configuration
 public class UserDao {
 	
 //	public Connection getConnection() throws ClassNotFoundException, SQLException{
