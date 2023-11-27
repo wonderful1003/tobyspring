@@ -9,15 +9,12 @@ public class UserDaoTest {
 
 	public static void main(String[] args) throws ClassNotFoundException, SQLException{
 		
-//		ConnectionMaker connectionMaker = new DConnectionMaker();
-//		UserDao dao = new UserDao(connectionMaker);
-		
 		ApplicationContext context = 
 				new AnnotationConfigApplicationContext(DaoFactory.class);
 		UserDao dao = context.getBean("userDao", UserDao.class);
 		
 		User user = new User();
-		user.setId("wonderful32");
+		user.setId("wonderful123");
 		user.setName("방승현");
 		user.setPassword("married");
 		

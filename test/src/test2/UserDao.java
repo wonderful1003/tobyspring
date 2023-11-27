@@ -10,17 +10,17 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class UserDao {
 	
-//	public Connection getConnection() throws ClassNotFoundException, SQLException{
-//
-//		Connection c = DriverManager.getConnection("jdbc:mysql://localhost:3306/test?characterEncoding=UTF-8"
-//				+ "&serverTimezone=UTC","root","qwer!2345");
-//		
-//		return c;
-//	}
-	
 	private ConnectionMaker connectionMaker;
 	
+	public UserDao() {		
+		connectionMaker = new LocalDBConnectionMaker();
+	}
+	
 	public UserDao(ConnectionMaker connectionMaker) {		
+		this.connectionMaker = connectionMaker;
+	}
+
+	public void setConnectionMaker(ConnectionMaker connectionMaker) {
 		this.connectionMaker = connectionMaker;
 	}
 
