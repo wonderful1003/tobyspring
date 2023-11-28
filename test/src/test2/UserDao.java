@@ -6,12 +6,20 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.sql.DataSource;
+
 import org.springframework.context.annotation.Configuration;
 @Configuration
 public class UserDao {
 	
 	private ConnectionMaker connectionMaker;
+	private DataSource dataSource;
 	
+	
+	public void setDataSource(DataSource dataSource) {
+		this.dataSource = dataSource;
+	}
+
 	public UserDao() {		
 		connectionMaker = new LocalDBConnectionMaker();
 	}
@@ -26,7 +34,8 @@ public class UserDao {
 
 	public void add(User user) throws ClassNotFoundException, SQLException{
 		
-		Connection c = connectionMaker.makeConnection();
+//		Connection c = connectionMaker.makeConnection();
+		Connection c = dataSource.getConnection();
 		
 		PreparedStatement ps = c.prepareStatement("insert into user(id, name, password) values(?,?,?)");
 		
