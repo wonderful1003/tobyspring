@@ -1,5 +1,9 @@
 package test2;
 
+import java.sql.SQLException;
+
+import org.junit.runner.JUnitCore;
+
 public class User {
 	String id;
 	String name;
@@ -22,7 +26,9 @@ public class User {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	
+	public static void main(String[] args) throws SQLException{
+		JUnitCore.main("test2.UserDaoTest");
+	}
 }
 
 
