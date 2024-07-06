@@ -1,4 +1,4 @@
-package test2;
+package spring;
 
 import java.sql.SQLException;
 

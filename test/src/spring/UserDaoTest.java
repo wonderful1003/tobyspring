@@ -1,4 +1,4 @@
-package test2;
+package spring;
 
 import static org.junit.Assert.assertThat;
 

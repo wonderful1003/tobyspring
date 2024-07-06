@@ -21,6 +21,11 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="C:/workspace/spring-test-3.0.7.RELEASE.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="C:/Users/BANG/.m2/repository/org/springframework/spring-core/6.0.13/spring-core-6.0.13.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
@@ -47,6 +52,16 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="C:/workspace/spring-jdbc-3.0.7.RELEASE.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/workspace/spring-test-6.1.1.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
