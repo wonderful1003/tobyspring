@@ -6,11 +6,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public abstract class UserDao {
+public class UserDao {
+	
 	private ConnectionMaker connectionMaker;
 
-	public UserDao() {
-		connectionMaker = new DConnectionMaker();
+	public UserDao(ConnectionMaker connectionMaker) {
+		this.connectionMaker = connectionMaker;
 	}
 
 	public void add(User user) throws ClassNotFoundException, SQLException{
@@ -51,45 +52,45 @@ public abstract class UserDao {
 		return user;
 	}
 	
-	public abstract Connection getConnection() throws ClassNotFoundException, SQLException;
-	
-	public class NUserDao extends UserDao{
-		public Connection getConnection() throws ClassNotFoundException, SQLException{
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection c = DriverManager.getConnection("jdbc:mysql://localhost:3306/test?characterEncoding=UTF-8"
-					+ "&serverTimezone=UTC","root","qwer!2345");
-			
-			return c;
-		}
-	}
-	
-	public class DUserDao extends UserDao{
-		public Connection getConnection() throws ClassNotFoundException, SQLException{
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection c = DriverManager.getConnection("jdbc:mysql://localhost:3306/test?characterEncoding=UTF-8"
-					+ "&serverTimezone=UTC","root","qwer!2345");
-			
-			return c;
-		}
-	}
-	
-	public static void main(String[] args) throws ClassNotFoundException, SQLException{
-		
-		UserDao dao = new UserDao();
-		
-		User user = new User();
-		user.setId("wonderful");
-		user.setName("방승현");
-		user.setPassword("married");
-		
-		dao.add(user);
-		
-		System.out.println(user.getId() + " success");
-		
-		User user2 = dao.get(user.getId());
-		System.out.println(user2.getName());
-		System.out.println(user2.getPassword());
-		System.out.println(user2.getId()+"조회성공");
-		
-	}	
+//	public abstract Connection getConnection() throws ClassNotFoundException, SQLException;
+//	
+//	public class NUserDao extends UserDao{
+//		public Connection getConnection() throws ClassNotFoundException, SQLException{
+//			Class.forName("com.mysql.jdbc.Driver");
+//			Connection c = DriverManager.getConnection("jdbc:mysql://localhost:3306/test?characterEncoding=UTF-8"
+//					+ "&serverTimezone=UTC","root","qwer!2345");
+//			
+//			return c;
+//		}
+//	}
+//	
+//	public class DUserDao extends UserDao{
+//		public Connection getConnection() throws ClassNotFoundException, SQLException{
+//			Class.forName("com.mysql.jdbc.Driver");
+//			Connection c = DriverManager.getConnection("jdbc:mysql://localhost:3306/test?characterEncoding=UTF-8"
+//					+ "&serverTimezone=UTC","root","qwer!2345");
+//			
+//			return c;
+//		}
+//	}
+//	
+//	public static void main(String[] args) throws ClassNotFoundException, SQLException{
+//		
+//		UserDao dao = new UserDao();
+//		
+//		User user = new User();
+//		user.setId("wonderful");
+//		user.setName("방승현");
+//		user.setPassword("married");
+//		
+//		dao.add(user);
+//		
+//		System.out.println(user.getId() + " success");
+//		
+//		User user2 = dao.get(user.getId());
+//		System.out.println(user2.getName());
+//		System.out.println(user2.getPassword());
+//		System.out.println(user2.getId()+"조회성공");
+//		
+//	}	
 }
