@@ -6,16 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class UserDao {
+public abstract class UserDao {
 
-	public Connection getConnection() throws ClassNotFoundException, SQLException{
-		Class.forName("com.mysql.jdbc.Driver");
-		Connection c = DriverManager.getConnection("jdbc:mysql://localhost:3306/test?characterEncoding=UTF-8"
-				+ "&serverTimezone=UTC","root","qwer!2345");
-		
-		return c;
-	}
-	
 	public void add(User user) throws ClassNotFoundException, SQLException{
 
 		Connection c = getConnection();
@@ -52,6 +44,28 @@ public class UserDao {
 		c.close();
 		
 		return user;
+	}
+	
+	public abstract Connection getConnection() throws ClassNotFoundException, SQLException;
+	
+	public class NUserDao extends UserDao{
+		public Connection getConnection() throws ClassNotFoundException, SQLException{
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection c = DriverManager.getConnection("jdbc:mysql://localhost:3306/test?characterEncoding=UTF-8"
+					+ "&serverTimezone=UTC","root","qwer!2345");
+			
+			return c;
+		}
+	}
+	
+	public class DUserDao extends UserDao{
+		public Connection getConnection() throws ClassNotFoundException, SQLException{
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection c = DriverManager.getConnection("jdbc:mysql://localhost:3306/test?characterEncoding=UTF-8"
+					+ "&serverTimezone=UTC","root","qwer!2345");
+			
+			return c;
+		}
 	}
 	
 	public static void main(String[] args) throws ClassNotFoundException, SQLException{
