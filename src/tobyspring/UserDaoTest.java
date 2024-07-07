@@ -9,7 +9,7 @@ public class UserDaoTest {
 		
 //		ConnectionMaker connectionMaker = new DConnectionMaker();
 //		UserDao dao = new DaoFactory().userDao();
-
+ 
 		ApplicationContext context = 
 				new AnnotationConfigApplicationContext(DaoFactory.class);
 		UserDao dao = context.getBean("userDao", UserDao.class);
