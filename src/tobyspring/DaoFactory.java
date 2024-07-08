@@ -8,9 +8,9 @@ public class DaoFactory {
 	
 	@Bean
 	public UserDao userDao() {
-//		ConnectionMaker connectionMaker = new DConnectionMaker();
-//		UserDao userDao = new UserDao(connectionMaker);
-		return new UserDao(connectionMaker());
+		ConnectionMaker connectionMaker = new DConnectionMaker();
+		UserDao userDao = new UserDao(connectionMaker);
+		return new UserDao(connectionMaker);
 	}
 	
 //	public AccountDao accountDao() {

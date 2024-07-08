@@ -1,24 +1,23 @@
 package tobyspring;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class UserDao {
-	private static UserDao INSTANCE;
 	
 	private ConnectionMaker connectionMaker;
 
-	private UserDao(ConnectionMaker connectionMaker) {
+	public UserDao(ConnectionMaker connectionMaker) {
 		this.connectionMaker = connectionMaker;
 	}
 	
-	public static synchronized UserDao getInstance() {
-		if(INSTANCE == null) INSTANCE = new UserDao(???);
-		return INSTANCE;
+	public UserDao() {
+		DaoFactory daoFactory = new DaoFactory();
+		this.connectionMaker = daoFactory.connectionMaker();
 	}
+	
 
 	public void add(User user) throws ClassNotFoundException, SQLException{
 
