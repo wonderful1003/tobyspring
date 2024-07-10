@@ -7,6 +7,8 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
+import org.junit.runner.JUnitCore;
+
 public class UserDao {
 	
 	private DataSource dataSource;
@@ -75,23 +77,9 @@ public class UserDao {
 //		}
 //	}
 //	
-//	public static void main(String[] args) throws ClassNotFoundException, SQLException{
-//		
-//		UserDao dao = new UserDao();
-//		
-//		User user = new User();
-//		user.setId("wonderful");
-//		user.setName("방승현");
-//		user.setPassword("married");
-//		
-//		dao.add(user);
-//		
-//		System.out.println(user.getId() + " success");
-//		
-//		User user2 = dao.get(user.getId());
-//		System.out.println(user2.getName());
-//		System.out.println(user2.getPassword());
-//		System.out.println(user2.getId()+"조회성공");
-//		
-//	}	
+	public static void main(String[] args) throws ClassNotFoundException, SQLException{
+		
+		JUnitCore.main("tobyspring.UserDaoTest");
+		
+	}	
 }
