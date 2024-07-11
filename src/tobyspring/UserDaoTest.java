@@ -1,9 +1,12 @@
 package tobyspring;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 import java.sql.SQLException;
 
 import org.junit.Assert;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericXmlApplicationContext;
 
@@ -27,5 +30,21 @@ public class UserDaoTest {
 		
 		Assert.assertEquals(user.getName(), user2.getName());	
 		Assert.assertEquals(user.getName(), user2.getName());	
+		
+		dao.deleteAll(); 
+		assertThat(dao.getCount(), is(0)); 
+
+		User user3 = new User(); 
+		user3.setId( "gyumee"); 
+		user3.setName(" 박성 철 "); 
+		user3.setPassword( "springno1 "); 
+		
+		dao.add(user3); 
+		assertThat(dao.getCount(), is(1));
+		
+		User user4 = dao.get(user3.getId()); 
+		assertThat(user4.getName() , is(user4.getName())); 
+		assertThat(user4.getPassword() , is(user4.getPassword()));
+		
 	}
 }

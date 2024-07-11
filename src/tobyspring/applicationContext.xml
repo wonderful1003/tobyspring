@@ -8,7 +8,8 @@
 		<property name="driverClass" value="com.mysql.cj.jdbc.Driver"/>
 		<property name="url" value="jdbc:mysql://localhost:3306/test?serverTimezone=UTC&amp;characterEncoding=UTF-8"/>
 		<property name="username" value="root"/>
-		<property name="password" value="qwer!2345"/>
+		<property name="password" value="admin"/>	<!-- 을지로입구 -->
+		<!-- <property name="password" value="qwer!2345"/> -->	<!-- 양천향교 -->
 	</bean>
 	
 	<bean id="userDao" class="tobyspring.UserDao">
