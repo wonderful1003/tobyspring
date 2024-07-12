@@ -19,32 +19,24 @@ public class UserDaoTest {
 				"/**/applicationContext.xml");
 		
 		UserDao dao = context.getBean("userDao", UserDao.class);
-		User user = new User();
-		user.setId("wonderful");
-		user.setName("방승현");
-		user.setPassword("married");
 		
-		dao.add(user);
+		User user1 = new User("gyumee", "박성철", "springnol"); 
+		User user2 = new User("leegw7ee", "이길원", "springno2"); 
 		
-		User user2 = dao.get(user.getId());
-		
-		Assert.assertEquals(user.getName(), user2.getName());	
-		Assert.assertEquals(user.getName(), user2.getName());	
-		
-		dao.deleteAll(); 
+		dao .deleteAll(); 
 		assertThat(dao.getCount(), is(0)); 
+		
+		dao.add(user1); 
+		dao.add(user2); 
+		assertThat(dao.getCount(), is(2));
 
-		User user3 = new User(); 
-		user3.setId( "gyumee"); 
-		user3.setName(" 박성 철 "); 
-		user3.setPassword( "springno1 "); 
-		
-		dao.add(user3); 
-		assertThat(dao.getCount(), is(1));
-		
-		User user4 = dao.get(user3.getId()); 
-		assertThat(user4.getName() , is(user4.getName())); 
-		assertThat(user4.getPassword() , is(user4.getPassword()));
+		User usergetl = dao .get(user1.getId()); 
+		assertThat(usergetl .getName() , is(user1.getName())); 
+		assertThat(usergetl .getPassword() , is(user1.getPassword())); 
+
+		User userget2 = dao.get(user2.getId()); 
+		assertThat(userget2.getName(), is(user2.getName())); 
+		assertThat(userget2.getPassword(), is(user2.getPassword()));
 		
 	}
 	
