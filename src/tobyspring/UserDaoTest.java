@@ -15,19 +15,27 @@ import org.springframework.dao.EmptyResultDataAccessException;
 public class UserDaoTest {
 	
 	private UserDao dao;
+
+	private User user1;
+	private User user2;
+	private User user3;
 	
 	@Before
 	public void setUp() {
 		ApplicationContext context = new GenericXmlApplicationContext(
 				"/**/applicationContext.xml");
 		this.dao = context.getBean("userDao", UserDao.class);
+		
+		this.user1 = new User("gyumee", "박성철", "springnol"); 
+		this.user2 = new User("leegw700", "이길원", "springno2"); 
+		this.user3 = new User("bumJin", "박범진", "springno3"); 
 	}
 	
 	@Test
 	public void addAndGet() throws SQLException, ClassNotFoundException {
 		
-		User user1 = new User("gyumee", "박성철", "springnol"); 
-		User user2 = new User("leegw7ee", "이길원", "springno2"); 
+//		User user1 = new User("gyumee", "박성철", "springnol"); 
+//		User user2 = new User("leegw7ee", "이길원", "springno2"); 
 		
 		dao.deleteAll(); 
 		assertThat(dao.getCount(), is(0)); 
@@ -49,15 +57,15 @@ public class UserDaoTest {
 	@Test 
 	public void count() throws SQLException, ClassNotFoundException { 
 
-		User userl = new User("gyumee", "박성철", "springnol"); 
-		User user2 = new User("leegw700", "이길원", "springno2"); 
-		User user3 = new User("bumJin", "박범진", "springno3");
+//		User user1 = new User("gyumee", "박성철", "springnol"); 
+//		User user2 = new User("leegw700", "이길원", "springno2"); 
+//		User user3 = new User("bumJin", "박범진", "springno3");
 				
 		dao.deleteAll();
 		
 		assertThat(dao.getCount() , is(0)); 
 
-		dao.add(userl);
+		dao.add(user1);
 		assertThat(dao.getCount(), is(1)); 
 		
 		dao.add(user2);
