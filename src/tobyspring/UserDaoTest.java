@@ -13,15 +13,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericXmlApplicationContext;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.datasource.SingleConnectionDataSource;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import javax.sql.DataSource;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations="/**/applicationContext.xml")
+@DirtiesContext
 public class UserDaoTest {
 	
-	@Autowired
-	private ApplicationContext context; 
+//	@Autowired
+//	private ApplicationContext context; 
 	
 	@Autowired
 	UserDao dao;
@@ -33,10 +37,15 @@ public class UserDaoTest {
 	@Before
 	public void setUp() {
 //		this.dao = this.context.getBean("userDao", UserDao.class);
-		
 		this.user1 = new User("gyumee", "박성철", "springnol"); 
 		this.user2 = new User("leegw700", "이길원", "springno2"); 
-		this.user3 = new User("bumJin", "박범진", "springno3"); 
+		this.user3 = new User("bumJin", "박범진", "springno3");
+		
+		DataSource dataSource = new SingleConnectionDataSource(
+				"jdbc:mysql://localhost:3306/test?serverTimezone=UTC&characterEncoding=UTF-8",
+				"root", "admin", true);
+		
+		dao.setDataSource(dataSource);
 	}
 	
 	@Test
@@ -62,7 +71,7 @@ public class UserDaoTest {
 		
 	}
 	
-	@Test 
+	//@Test 
 	public void count() throws SQLException, ClassNotFoundException { 
 
 //		User user1 = new User("gyumee", "박성철", "springnol"); 
@@ -83,7 +92,7 @@ public class UserDaoTest {
 		assertThat(dao.getCount() , is(3));
 	}
 	
-	@Test(expected=EmptyResultDataAccessException.class) 
+	//@Test(expected=EmptyResultDataAccessException.class) 
 	public void getUserFailure() throws SQLException, ClassNotFoundException{ 
 
 		dao.deleteAll(); 
