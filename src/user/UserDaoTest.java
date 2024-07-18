@@ -20,7 +20,7 @@ import user.dao.UserDao;
 import user.domain.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations="/**/test-applicationContext.xml")
+@ContextConfiguration(locations="/**/user/applicationContext.xml")
 @DirtiesContext
 public class UserDaoTest {
 	
@@ -50,7 +50,7 @@ public class UserDaoTest {
 		dao.setDataSource(dataSource);
 	}
 	
-	//@Test
+	@Test
 	public void addAndGet() throws SQLException, ClassNotFoundException {
 		
 //		User user1 = new User("gyumee", "박성철", "springnol"); 
