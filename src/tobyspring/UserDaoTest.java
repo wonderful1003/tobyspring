@@ -27,7 +27,7 @@ public class UserDaoTest {
 //	@Autowired
 //	private ApplicationContext context; 
 	
-	@Autowired
+//	@Autowired
 	UserDao dao;
 
 	private User user1;
@@ -40,6 +40,8 @@ public class UserDaoTest {
 		this.user1 = new User("gyumee", "박성철", "springnol"); 
 		this.user2 = new User("leegw700", "이길원", "springno2"); 
 		this.user3 = new User("bumJin", "박범진", "springno3");
+		
+		dao = new UserDao();
 		
 		DataSource dataSource = new SingleConnectionDataSource(
 				"jdbc:mysql://localhost:3306/test?serverTimezone=UTC&characterEncoding=UTF-8",
