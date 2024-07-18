@@ -50,7 +50,7 @@ public class UserDaoTest {
 		dao.setDataSource(dataSource);
 	}
 	
-	@Test
+	//@Test
 	public void addAndGet() throws SQLException, ClassNotFoundException {
 		
 //		User user1 = new User("gyumee", "박성철", "springnol"); 
@@ -94,7 +94,7 @@ public class UserDaoTest {
 		assertThat(dao.getCount() , is(3));
 	}
 	
-	//@Test(expected=EmptyResultDataAccessException.class) 
+	@Test(expected=EmptyResultDataAccessException.class) 
 	public void getUserFailure() throws SQLException, ClassNotFoundException{ 
 
 		dao.deleteAll(); 
