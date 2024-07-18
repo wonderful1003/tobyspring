@@ -88,14 +88,43 @@ public class UserDao {
 	}
 	
 	public int getCount() throws SQLException{
+		Connection c = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
 		
-		Connection c = dataSource.getConnection();
+		try {
+			c = dataSource.getConnection();
 		
-		PreparedStatement ps = c.prepareStatement("select count(*) from user");
+			ps = c.prepareStatement("select count(*) from user");
+			
+			rs = ps.executeQuery();
+			rs.next();
+			return rs.getInt(1);
+		} catch (SQLException e) {
+			throw e;
+		}finally {
+			if (rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException e) {
+				}
+			}
+			if (ps != null) {
+				try {
+					ps.close();
+				} catch (SQLException e) {
+				}
+			}
+			if (c != null) {
+				try {
+					c.close();
+				} catch (SQLException e) {
+				}
+				
+			}
+		}
 		
-		ResultSet rs = ps.executeQuery();
-		rs.next();
-		int count = rs.getInt(1);
+		
 		
 		rs.close();
 		ps.close();
@@ -104,28 +133,6 @@ public class UserDao {
 		return count;
 	}
 	
-//	public abstract Connection getConnection() throws ClassNotFoundException, SQLException;
-//	
-//	public class NUserDao extends UserDao{
-//		public Connection getConnection() throws ClassNotFoundException, SQLException{
-//			Class.forName("com.mysql.jdbc.Driver");
-//			Connection c = DriverManager.getConnection("jdbc:mysql://localhost:3306/test?characterEncoding=UTF-8"
-//					+ "&serverTimezone=UTC","root","qwer!2345");
-//			
-//			return c;
-//		}
-//	}
-//	
-//	public class DUserDao extends UserDao{
-//		public Connection getConnection() throws ClassNotFoundException, SQLException{
-//			Class.forName("com.mysql.jdbc.Driver");
-//			Connection c = DriverManager.getConnection("jdbc:mysql://localhost:3306/test?characterEncoding=UTF-8"
-//					+ "&serverTimezone=UTC","root","qwer!2345");
-//			
-//			return c;
-//		}
-//	}
-//	
 	public static void main(String[] args) throws ClassNotFoundException, SQLException{
 		
 		JUnitCore.main("tobyspring.UserDaoTest");
