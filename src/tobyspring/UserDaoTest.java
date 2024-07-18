@@ -73,7 +73,7 @@ public class UserDaoTest {
 		
 	}
 	
-	//@Test 
+	@Test 
 	public void count() throws SQLException, ClassNotFoundException { 
 
 //		User user1 = new User("gyumee", "박성철", "springnol"); 

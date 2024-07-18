@@ -123,14 +123,6 @@ public class UserDao {
 				
 			}
 		}
-		
-		
-		
-		rs.close();
-		ps.close();
-		c.close();
-		
-		return count;
 	}
 	
 	public static void main(String[] args) throws ClassNotFoundException, SQLException{
