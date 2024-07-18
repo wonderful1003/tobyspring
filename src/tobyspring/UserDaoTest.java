@@ -20,7 +20,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import javax.sql.DataSource;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations="/**/applicationContext.xml")
+@ContextConfiguration(locations="/**/test-applicationContext.xml")
 @DirtiesContext
 public class UserDaoTest {
 	
