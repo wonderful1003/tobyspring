@@ -1,4 +1,4 @@
-package tobyspring;
+package user.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,6 +9,8 @@ import javax.sql.DataSource;
 
 import org.junit.runner.JUnitCore;
 import org.springframework.dao.EmptyResultDataAccessException;
+
+import user.domain.User;
 
 public class UserDao {
 	
@@ -66,7 +68,10 @@ public class UserDao {
 		PreparedStatement ps = null;
 		try {
 			c = dataSource.getConnection();
-			ps = c.prepareStatement("delete from user");
+			
+			StatementStrategy strategy = new DeleteAllStatement();
+			ps = strategy.makePreparedStatement(c); 
+			
 			ps.executeUpdate();
 		} catch (SQLException e) {
 			throw e;

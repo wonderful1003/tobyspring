@@ -1,5 +1,6 @@
-package tobyspring;
+package user.dao;
 
+import user.domain.User;
 import java.sql.SQLException;
 
 import org.springframework.context.ApplicationContext;

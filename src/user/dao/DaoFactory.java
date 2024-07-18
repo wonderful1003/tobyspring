@@ -1,4 +1,4 @@
-package tobyspring;
+package user.dao;
 
 import javax.sql.DataSource;
 
