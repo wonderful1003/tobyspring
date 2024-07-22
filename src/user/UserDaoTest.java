@@ -10,6 +10,8 @@ import javax.sql.DataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.test.annotation.DirtiesContext;
@@ -24,10 +26,10 @@ import user.domain.User;
 @DirtiesContext
 public class UserDaoTest {
 	
-//	@Autowired
-//	private ApplicationContext context; 
+	@Autowired
+	private ApplicationContext context; 
 	
-//	@Autowired
+	@Autowired
 	UserDao dao;
 
 	private User user1;
@@ -41,20 +43,17 @@ public class UserDaoTest {
 		this.user2 = new User("leegw700", "이길원", "springno2"); 
 		this.user3 = new User("bumJin", "박범진", "springno3");
 		
-		dao = new UserDao();
+//		dao = new UserDao();
 		
-		DataSource dataSource = new SingleConnectionDataSource(
-				"jdbc:mysql://localhost:3306/test?serverTimezone=UTC&characterEncoding=UTF-8",
-				"root", "admin", true);
-		
-		dao.setDataSource(dataSource);
+//		DataSource dataSource = new SingleConnectionDataSource(
+//				"jdbc:mysql://localhost:3306/test?serverTimezone=UTC&characterEncoding=UTF-8",
+//				"root", "admin", true);
+//		
+//		dao.setDataSource(dataSource);
 	}
 	
 	@Test
 	public void addAndGet() throws SQLException, ClassNotFoundException {
-		
-//		User user1 = new User("gyumee", "박성철", "springnol"); 
-//		User user2 = new User("leegw7ee", "이길원", "springno2"); 
 		
 		dao.deleteAll(); 
 		assertThat(dao.getCount(), is(0)); 
@@ -76,10 +75,10 @@ public class UserDaoTest {
 	@Test 
 	public void count() throws SQLException, ClassNotFoundException { 
 
-//		User user1 = new User("gyumee", "박성철", "springnol"); 
-//		User user2 = new User("leegw700", "이길원", "springno2"); 
-//		User user3 = new User("bumJin", "박범진", "springno3");
-				
+		User user1 = new User("gyumee", "박성철", "springnol"); 
+		User user2 = new User("leegw700", "이길원", "springno2"); 
+		User user3 = new User("bumJin", "박범진", "springno3");
+			
 		dao.deleteAll();
 		
 		assertThat(dao.getCount() , is(0)); 

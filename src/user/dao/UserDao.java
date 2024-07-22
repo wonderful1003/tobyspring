@@ -19,9 +19,15 @@ public class UserDao {
 	public void setDataSource(DataSource dataSource) {
 		this.dataSource = dataSource;
 	}
+	
+	private JdbcContext jdbcContext; 
+	
+	public void setJdbcContext(JdbcContext jdbcContext) {
+		this.jdbcContext = jdbcContext;
+	}	
 
 	public void add(final User user) throws ClassNotFoundException, SQLException{
-		jdbcContextWithStatementStrategy( 
+		this.jdbcContext.workWithStatementStrategy( 
 			new StatementStrategy() {
 				public PreparedStatement makePreparedStatement(Connection c) throws SQLException{
 					PreparedStatement ps = c.prepareStatement("insert into user(id, name, password) values(?,?,?)"); 
@@ -36,6 +42,16 @@ public class UserDao {
 		);
 	}
 
+	public void deleteAll() throws SQLException, ClassNotFoundException{
+		this.jdbcContext.workWithStatementStrategy(
+			new StatementStrategy() {
+				public PreparedStatement makePreparedStatement(Connection c) throws SQLException{
+					return c.prepareStatement("delete from user");
+				}
+			}	
+		);
+	}
+	
 	public User get(String id) throws ClassNotFoundException, SQLException{
 
 		Connection c = dataSource.getConnection();
@@ -61,17 +77,6 @@ public class UserDao {
 		if (user == null) throw new EmptyResultDataAccessException(1);
 		
 		return user;
-	}
-
-	public void deleteAll() throws SQLException{
-		StatementStrategy st = new DeleteAllStatement();
-		jdbcContextWithStatementStrategy(
-			new StatementStrategy() {
-				public PreparedStatement makePreparedStatement(Connection c) throws SQLException{
-					return c.prepareStatement("delete from user");
-				}
-			}	
-		);
 	}
 
 	public void jdbcContextWithStatementStrategy(StatementStrategy stmt) throws SQLException{
