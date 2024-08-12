@@ -9,19 +9,18 @@ import javax.sql.DataSource;
 
 import org.junit.runner.JUnitCore;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import user.domain.User;
 
 public class UserDao {
 	
 	private DataSource dataSource;
-	private JdbcContext jdbcContext; 
+	private JdbcContext jdbcContext;
+	private JdbcTemplate jdbcTemplate;
 
 	public void setDataSource(DataSource dataSource) {
-		this.jdbcContext = new JdbcContext();
-		
-		this.jdbcContext.setDataSource(dataSource);
-		
+		this.jdbcTemplate = new JdbcTemplate(dataSource);
 		this.dataSource = dataSource;
 	}
 	
