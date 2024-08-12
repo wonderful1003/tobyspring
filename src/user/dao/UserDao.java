@@ -10,13 +10,13 @@ import javax.sql.DataSource;
 import org.junit.runner.JUnitCore;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 
 import user.domain.User;
 
 public class UserDao {
 	
 	private DataSource dataSource;
-	private JdbcContext jdbcContext;
 	private JdbcTemplate jdbcTemplate;
 
 	public void setDataSource(DataSource dataSource) {
@@ -29,23 +29,12 @@ public class UserDao {
 	}	
 
 	public void add(final User user) throws ClassNotFoundException, SQLException{
-		this.jdbcContext.workWithStatementStrategy( 
-			new StatementStrategy() {
-				public PreparedStatement makePreparedStatement(Connection c) throws SQLException{
-					PreparedStatement ps = c.prepareStatement("insert into user(id, name, password) values(?,?,?)"); 
-					
-					ps.setString(1, user.getId()); 
-					ps.setString(2, user.getName()); 
-					ps.setString(3, user.getPassword()); 
-					
-					return ps;
-				}
-			}	
-		);
+		this.jdbcTemplate.update("insert into user(id, name, password) values(?,?,?)",
+				user.getId(),user.getName(),user.getPassword());
 	}
 
 	public void deleteAll() throws SQLException, ClassNotFoundException{
-		this.jdbcContext.executeSql("delete from user");
+		this.jdbcTemplate.update("delete from user");
 	}
 	
 	public User get(String id) throws ClassNotFoundException, SQLException{
