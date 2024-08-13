@@ -8,11 +8,13 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 
 import org.junit.runner.JUnitCore;
+import org.springframework.aop.ThrowsAdvice;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.RowMapper;
 
 import user.domain.User;
 
@@ -40,30 +42,18 @@ public class UserDao {
 	}
 	
 	public User get(String id) throws ClassNotFoundException, SQLException{
-
-		Connection c = dataSource.getConnection();
-		
-		PreparedStatement ps = c.prepareStatement("select id,name,password from user where id =?");
-		
-		ps.setString(1, id);
-		
-		ResultSet rs = ps.executeQuery();
-		
-		User user = null;
-		if(rs.next()){
-			user = new User();
-			user.setId(rs.getString("id"));
-			user.setName(rs.getString("name"));
-			user.setPassword(rs.getString("Password"));
-		}
-		
-		rs.close();
-		ps.close();
-		c.close();
-		
-		if (user == null) throw new EmptyResultDataAccessException(1);
-		
-		return user;
+		return this.jdbcTemplate.queryForObject("select * from user where id =?",
+				new Object[] {id},
+				new RowMapper<User>() {
+					public User mapRow(ResultSet rs, int rowNum) 
+							throws SQLException{
+						User user = new User();
+						user.setId(rs.getString("id"));
+						user.setName(rs.getString("name"));
+						user.setPassword(rs.getString("password"));
+						return user;
+					}
+		});
 	}
 
 	public void jdbcContextWithStatementStrategy(StatementStrategy stmt) throws SQLException{
