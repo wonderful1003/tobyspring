@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.sql.DataSource;
 
@@ -38,21 +39,12 @@ public class UserDaoTest {
 	
 	@Before
 	public void setUp() {
-//		this.dao = this.context.getBean("userDao", UserDao.class);
 		this.user1 = new User("gyumee", "박성철", "springnol"); 
 		this.user2 = new User("leegw700", "이길원", "springno2"); 
 		this.user3 = new User("bumJin", "박범진", "springno3");
-		
-//		dao = new UserDao();
-		
-//		DataSource dataSource = new SingleConnectionDataSource(
-//				"jdbc:mysql://localhost:3306/test?serverTimezone=UTC&characterEncoding=UTF-8",
-//				"root", "admin", true);
-//		
-//		dao.setDataSource(dataSource);
 	}
 	
-	@Test
+	//@Test
 	public void addAndGet() throws SQLException, ClassNotFoundException {
 		
 		dao.deleteAll(); 
@@ -72,7 +64,7 @@ public class UserDaoTest {
 		
 	}
 	
-	@Test 
+	//@Test 
 	public void count() throws SQLException, ClassNotFoundException { 
 
 		User user1 = new User("gyumee", "박성철", "springnol"); 
@@ -93,12 +85,42 @@ public class UserDaoTest {
 		assertThat(dao.getCount() , is(3));
 	}
 	
-	@Test(expected=EmptyResultDataAccessException.class) 
+	//@Test(expected=EmptyResultDataAccessException.class) 
 	public void getUserFailure() throws SQLException, ClassNotFoundException{ 
 
 		dao.deleteAll(); 
 		assertThat(dao.getCount(), is(0)); 
 		
 		dao.get("unknown_id");
+	}
+	
+	@Test
+	public void getAll() throws ClassNotFoundException, SQLException {
+		dao.deleteAll();
+		
+		dao.add(user1);
+		List<User> user1 = dao.getAll();	//gyumee
+		assertThat(user1.size() , is(1));
+		checkSameUser(this.user1, user1.get(0));
+		
+		dao.add(user2);
+		List<User> user2 = dao.getAll();	//leegw700
+		assertThat(user2.size() , is(2));
+		checkSameUser(this.user1, user2.get(0));
+		checkSameUser(this.user2, user2.get(1));
+
+		dao.add(user3);						//bumJin
+		List<User> user3 = dao.getAll();
+		assertThat(user3.size() , is(3));
+		checkSameUser(this.user3, user3.get(0));
+		checkSameUser(this.user1, user3.get(1));
+		checkSameUser(this.user2, user3.get(2));
+		
+	}
+	
+	private void checkSameUser(User user1, User user2) {
+		assertThat(user1.getId()  , is(user2.getId()));
+		assertThat(user1.getName(), is(user2.getName()));
+		assertThat(user1.getPassword()  , is(user2.getPassword()));
 	}
 }

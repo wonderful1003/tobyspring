@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.sql.DataSource;
 
@@ -43,16 +44,16 @@ public class UserDao {
 	
 	public User get(String id) throws ClassNotFoundException, SQLException{
 		return this.jdbcTemplate.queryForObject("select * from user where id =?",
-				new Object[] {id},
-				new RowMapper<User>() {
-					public User mapRow(ResultSet rs, int rowNum) 
-							throws SQLException{
-						User user = new User();
-						user.setId(rs.getString("id"));
-						user.setName(rs.getString("name"));
-						user.setPassword(rs.getString("password"));
-						return user;
-					}
+			new Object[] {id},
+			new RowMapper<User>() {
+				public User mapRow(ResultSet rs, int rowNum) 
+						throws SQLException{
+					User user = new User();
+					user.setId(rs.getString("id"));
+					user.setName(rs.getString("name"));
+					user.setPassword(rs.getString("password"));
+					return user;
+				}
 		});
 	}
 
@@ -74,6 +75,20 @@ public class UserDao {
 	
 	public int getCount() throws SQLException{
 		return this.jdbcTemplate.queryForObject("select count(*) from user", Integer.class);
+	}
+	
+	public List<User> getAll() {
+		return this.jdbcTemplate.query("select * from user order by id",
+			new RowMapper<User>() {
+				public User mapRow(ResultSet rs, int rowNum) 
+						throws SQLException{
+					User user = new User();
+					user.setId(rs.getString("id"));
+					user.setName(rs.getString("name"));
+					user.setPassword(rs.getString("password"));
+					return user;
+				}
+		});
 	}
 	
 //	public static void main(String[] args) throws ClassNotFoundException, SQLException{
