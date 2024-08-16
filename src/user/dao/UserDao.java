@@ -86,7 +86,7 @@ public class UserDao {
 					user.setId(rs.getString("id"));
 					user.setName(rs.getString("name"));
 					user.setPassword(rs.getString("password"));
-					return user;
+					return user; 
 				}
 		});
 	}
