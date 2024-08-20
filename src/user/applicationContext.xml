@@ -6,7 +6,7 @@
        http://www.springframework.org/schema/context 
 	   http://www.springframework.org/schema/context/spring-context.xsd">
 
-	<bean id="userDao" class="user.dao.UserDao">
+	<bean id="userDao" class="user.dao.UserDaoJdbc">
 		<property name="dataSource" ref="dataSource"/>
 	</bean>
 

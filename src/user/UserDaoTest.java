@@ -13,13 +13,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import user.dao.UserDao;
+import user.dao.UserDaoJdbc;
 import user.domain.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -31,7 +32,7 @@ public class UserDaoTest {
 	private ApplicationContext context; 
 	
 	@Autowired
-	UserDao dao;
+	UserDaoJdbc dao;
 
 	private User user1;
 	private User user2;
@@ -116,6 +117,14 @@ public class UserDaoTest {
 		checkSameUser(this.user1, user3.get(1));
 		checkSameUser(this.user2, user3.get(2));
 		
+	}
+	
+	//@Test(expected=DataAccessException.class)
+	public void duplicateKey() throws ClassNotFoundException, SQLException {
+		dao.deleteAll();
+		
+		dao.add(user1);
+		dao.add(user1);
 	}
 	
 	private void checkSameUser(User user1, User user2) {
