@@ -11,4 +11,6 @@ public interface UserDao {
 	List<User> getAll();
 	void deleteAll() throws SQLException, ClassNotFoundException;
 	int getCount() throws SQLException;
+	public void update(User user1);
+		
 }
