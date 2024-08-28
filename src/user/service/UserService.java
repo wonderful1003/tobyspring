@@ -1,5 +1,6 @@
 package user.service;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import org.junit.Test;
@@ -37,5 +38,9 @@ public class UserService {
 			}
 		}
 	}
-	
+
+	public void add(User user) throws ClassNotFoundException, SQLException {
+		if(user.getLevel() == null) user.setLevel(Level.BASIC);
+		userDao.add(user);
+	}
 }
