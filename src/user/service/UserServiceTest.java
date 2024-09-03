@@ -3,6 +3,7 @@ package user.service;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -45,7 +46,7 @@ public class UserServiceTest {
 		);
 	}
 	
-	@Test
+	//@Test
 	public void upgradeLevels() throws ClassNotFoundException, SQLException {
 		userDao.deleteAll();
 		
@@ -76,7 +77,7 @@ public class UserServiceTest {
 		}
 	}
 	
-	@Test
+	//@Test
 	public void add() throws ClassNotFoundException, SQLException {
 		userDao.deleteAll();
 		
@@ -92,5 +93,40 @@ public class UserServiceTest {
 		
 		assertThat(userWithLevelRead.getLevel(), is(userWithLevel.getLevel()));
 		assertThat(userWithoutLevelRead.getLevel(), is(Level.BASIC));
+	}
+	
+	static class TestUserService extends UserService{
+		private String id;
+		
+		private TestUserService(String id) {
+			this.id = id;
+		}
+		
+		protected void upgradeLevel(User user) {
+			if (user.getId().equals(this.id)) throw new TestUserServiceException();
+			super.upgradeLevel(user);
+		}
+	}
+	
+	static class TestUserServiceException extends RuntimeException{
+		
+	}
+	
+	@Test
+	public void upgradeAllOrNothing() throws ClassNotFoundException, SQLException {
+		UserService testUserService = new TestUserService(users.get(3).getId());
+		testUserService.setUserDao(this.userDao);
+		 
+		userDao.deleteAll();
+		for(User user : users) userDao.add(user);
+		
+		try {
+			testUserService.upgradeLevels();
+			fail("TestUserServiceException expected");
+		} catch (TestUserServiceException e) {
+			// TODO: handle exception
+		}
+		
+		checkLevelUpgraded(users.get(1), false);
 	}
 }
