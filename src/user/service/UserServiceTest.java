@@ -9,6 +9,8 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.sql.DataSource;
+
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -35,6 +37,9 @@ public class UserServiceTest {
 	@Autowired
 	UserDao userDao;
 	
+	@Autowired
+	DataSource dataSource;
+	
 	@Before
 	public void setUp() {
 		users = Arrays.asList(
@@ -54,7 +59,7 @@ public class UserServiceTest {
 			userDao.add(user);
 		}
 		
-		userService.upgradeLevels();
+		//userService.upgradeLevels();
 		
 		checkLevelUpgraded(users.get(0), false);
 		checkLevelUpgraded(users.get(1), true);
@@ -113,9 +118,10 @@ public class UserServiceTest {
 	}
 	
 	@Test
-	public void upgradeAllOrNothing() throws ClassNotFoundException, SQLException {
+	public void upgradeAllOrNothing() throws Exception {
 		UserService testUserService = new TestUserService(users.get(3).getId());
 		testUserService.setUserDao(this.userDao);
+		testUserService.setDataSource(this.dataSource);
 		 
 		userDao.deleteAll();
 		for(User user : users) userDao.add(user);
