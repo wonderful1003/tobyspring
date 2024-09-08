@@ -8,9 +8,15 @@
 
 	<bean id="userService" class="user.service.UserService">
 		<property name="userDao" ref="userDao"/>
-		<property name="dataSource" ref="dataSource"/>
+		<property name="transactionManager" ref="transactionManager"/>
+<!-- 		<property name="dataSource" ref="dataSource"/> -->
 	</bean>
 	
+	<bean id="transactionManager" 
+			class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+
 	<bean id="userDao" class="user.dao.UserDaoJdbc">
 		<property name="dataSource" ref="dataSource"/>
 	</bean>
