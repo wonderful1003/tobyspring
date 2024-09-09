@@ -30,14 +30,15 @@ public class UserDaoJdbc implements UserDao{
 				user.setLevel(Level.valueOf(rs.getInt("level")));
 				user.setLogin(rs.getInt("login"));
 				user.setRecommend(rs.getInt("recommend"));
+				user.setEmail(rs.getString("email"));
 				return user; 
 			}
 		};
 	
 	public void add(final User user) throws ClassNotFoundException, SQLException{
-		this.jdbcTemplate.update("insert into user(id, name, password, level, login, recommend) "
-				+ "values(?,?,?,?,?,?)", user.getId(),user.getName(),user.getPassword(),
-				user.getLevel().intValue(), user.getLogin(), user.getRecommend());
+		this.jdbcTemplate.update("insert into user(id, name, password, level, login, recommend, email) "
+				+ "values(?,?,?,?,?,?,?)", user.getId(),user.getName(),user.getPassword(),
+				user.getLevel().intValue(), user.getLogin(), user.getRecommend(), user.getEmail());
 	}
 
 	public void deleteAll() throws SQLException, ClassNotFoundException{
@@ -61,8 +62,8 @@ public class UserDaoJdbc implements UserDao{
 	public void update(User user) {
 		this.jdbcTemplate.update(
 				"update user set name =?, password = ?, level = ?, login = ?, "
-				+ "recommend = ? where id = ? ", user.getName(),user.getPassword(),
-				user.getLevel().intValue(), user.getLogin(), user.getRecommend(), user.getId());
+				+ "recommend = ?, email=? where id = ? ", user.getName(),user.getPassword(),
+				user.getLevel().intValue(), user.getLogin(), user.getRecommend(), user.getEmail(), user.getId());
 
 		
 	}
