@@ -9,7 +9,13 @@
 	<bean id="userService" class="user.service.UserService">
 		<property name="userDao" ref="userDao"/>
 		<property name="transactionManager" ref="transactionManager"/>
+		<property name="mailSender" ref="mailSender"/>
 <!-- 		<property name="dataSource" ref="dataSource"/> -->
+	</bean>
+	
+	<bean id="mailSender" 
+			class="user.service.DummyMailSender">
+		<property name="host" value="mail.server.com"/>
 	</bean>
 	
 	<bean id="transactionManager" 
