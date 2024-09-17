@@ -6,15 +6,17 @@
        http://www.springframework.org/schema/context 
 	   http://www.springframework.org/schema/context/spring-context.xsd">
 
-	<bean id="userService" class="user.service.UserService">
-		<property name="userDao" ref="userDao"/>
+	<bean id="userService" class="user.service.UserServiceTx">
 		<property name="transactionManager" ref="transactionManager"/>
+		<property name="userService" ref="userServiceImpl"/>
+	</bean>
+
+	<bean id="userServiceImpl" class="user.service.UserServiceImpl">
+		<property name="userDao" ref="userDao"/>
 		<property name="mailSender" ref="mailSender"/>
-<!-- 		<property name="dataSource" ref="dataSource"/> -->
 	</bean>
 	
-	<bean id="mailSender" 
-			class="user.service.DummyMailSender">
+	<bean id="mailSender" class="user.service.DummyMailSender">
 		<property name="host" value="mail.server.com"/>
 	</bean>
 	

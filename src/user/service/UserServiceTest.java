@@ -1,7 +1,6 @@
 package user.service;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -12,6 +11,8 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
@@ -26,17 +27,14 @@ import user.dao.UserDao;
 import user.domain.Level;
 import user.domain.User;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import static user.service.UserService.MIN_LOGCOUNT_FOR_SILVER;
-import static user.service.UserService.MIN_RECOMMEND_FOR_GOLD;
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations="/**/user/applicationContext.xml")
 public class UserServiceTest {
 	@Autowired
 	UserService userService;
+	
+	@Autowired
+	UserServiceImpl userServiceImpl;
 	
 	List<User> users;
 	
@@ -55,16 +53,15 @@ public class UserServiceTest {
 	@Before
 	public void setUp() {
 		users = Arrays.asList(
-				new User("bumjin", "박범진", "p1", Level.BASIC, MIN_LOGCOUNT_FOR_SILVER-1, 0, "a@a.com"),
-				new User("joytouch", "강명성", "p2", Level.BASIC, MIN_LOGCOUNT_FOR_SILVER, 0, "b@b.com"),
-				new User("erwins", "신승한", "p3", Level.SILVER, 60, MIN_RECOMMEND_FOR_GOLD-1, "c@c.com"),
-				new User("madnite1", "이상호", "p4", Level.SILVER, 60, MIN_RECOMMEND_FOR_GOLD, "d@d.com"),
+				new User("bumjin", "박범진", "p1", Level.BASIC, userServiceImpl.MIN_LOGCOUNT_FOR_SILVER-1, 0, "a@a.com"),
+				new User("joytouch", "강명성", "p2", Level.BASIC, userServiceImpl.MIN_LOGCOUNT_FOR_SILVER, 0, "b@b.com"),
+				new User("erwins", "신승한", "p3", Level.SILVER, 60, userServiceImpl.MIN_RECOMMEND_FOR_GOLD-1, "c@c.com"),
+				new User("madnite1", "이상호", "p4", Level.SILVER, 60, userServiceImpl.MIN_RECOMMEND_FOR_GOLD, "d@d.com"),
 				new User("green", "오민규", "p5", Level.GOLD, 100, 100, "e@e.com")
 		);
 	}
 	
 	@Test
-	@DirtiesContext
 	public void upgradeLevels() throws Exception {
 		userDao.deleteAll();
 		
@@ -73,7 +70,7 @@ public class UserServiceTest {
 		}
 		
 		MockMailSender mockMailSender = new MockMailSender();
-		userService.setMailSender(mockMailSender);
+		userServiceImpl.setMailSender(mockMailSender);
 		
 		userService.upgradeLevels();
 		
@@ -121,7 +118,7 @@ public class UserServiceTest {
 		assertThat(userWithoutLevelRead.getLevel(), is(Level.BASIC));
 	}
 	
-	static class TestUserService extends UserService{
+	static class TestUserService extends UserServiceImpl{
 		private String id;
 		
 		private TestUserService(String id) {
@@ -140,17 +137,20 @@ public class UserServiceTest {
 	
 	@Test
 	public void upgradeAllOrNothing() throws Exception {
-		UserService testUserService = new TestUserService(users.get(3).getId());
-		testUserService.setUserDao(this.userDao);
-		testUserService.setTransactionManager(this.transactionManager);
+		
+		TestUserService testUserService = new TestUserService(users.get(3).getId());
+		testUserService.setUserDao(userDao);
 		testUserService.setMailSender(mailSender);
-//		testUserService.setDataSource(this.dataSource);
-		 
+		
+		UserServiceTx txUserService = new UserServiceTx();
+		txUserService.setTransactionManager(transactionManager);
+		txUserService.setUserService(testUserService);
+		
 		userDao.deleteAll();
 		for(User user : users) userDao.add(user);
 		
 		try {
-			testUserService.upgradeLevels();
+			txUserService.upgradeLevels();
 			fail("TestUserServiceException expected");
 		} catch (TestUserServiceException e) {
 			// TODO: handle exception
