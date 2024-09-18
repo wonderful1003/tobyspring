@@ -63,27 +63,31 @@ public class UserServiceTest {
 	
 	@Test
 	public void upgradeLevels() throws Exception {
-		userDao.deleteAll();
 		
-		for(User user : users) {
-			userDao.add(user);
-		}
+		UserServiceImpl userServiceImpl = new UserServiceImpl();
+		
+		MockUserDao mockUserDao = new MockUserDao(this.users);
+		userServiceImpl.setUserDao(mockUserDao);
 		
 		MockMailSender mockMailSender = new MockMailSender();
 		userServiceImpl.setMailSender(mockMailSender);
 		
-		userService.upgradeLevels();
+		userServiceImpl.upgradeLevels();
 		
-		checkLevelUpgraded(users.get(0), false);
-		checkLevelUpgraded(users.get(1), true);
-		checkLevelUpgraded(users.get(2), false);
-		checkLevelUpgraded(users.get(3), true);
-		checkLevelUpgraded(users.get(4), false);
+		List<User> updated = mockUserDao.getUpdated();
+		assertThat(updated.size(), is(2));
+		checkUserAndLevel(updated.get(0), "joytouch", Level.SILVER);
+		checkUserAndLevel(updated.get(1), "madnite1", Level.GOLD);
 		
 		List<String> request = mockMailSender.getRequests();
 		assertThat(request.size(), is(2));
 		assertThat(request.get(0), is(users.get(1).getEmail()));
 		assertThat(request.get(1), is(users.get(3).getEmail()));
+	}
+	
+	private void checkUserAndLevel(User updated, String expectedId, Level expectedLevel) {
+		assertThat(updated.getId(), is(expectedId));
+		assertThat(updated.getLevel(), is(expectedLevel));
 	}
 	
 	private void checkLevel(User user, Level expectedLevel) throws ClassNotFoundException, SQLException {
@@ -173,6 +177,48 @@ public class UserServiceTest {
 		
 		public void send(SimpleMailMessage[] mailMessage) throws MailException{
 			
+		}
+	}
+	
+	static class MockUserDao implements UserDao{
+
+		private List<User> users;
+		private List<User> updated = new ArrayList();
+		
+		private MockUserDao(List<User> users) {
+			this.users = users;
+		}
+
+		public List<User> getUpdated() {
+			return this.updated;
+		}
+
+		@Override
+		public List<User> getAll() {
+			return this.users;
+		}
+
+		@Override
+		public void update(User user) {
+			updated.add(user);
+		}
+		
+		@Override
+		public void add(User user) throws UnsupportedOperationException {
+		}
+		
+		@Override
+		public User get(String id) throws UnsupportedOperationException {
+			return null;
+		}
+		
+		@Override
+		public void deleteAll() throws UnsupportedOperationException {
+		}
+		
+		@Override
+		public int getCount() throws UnsupportedOperationException {
+			return 0;
 		}
 	}
 }
