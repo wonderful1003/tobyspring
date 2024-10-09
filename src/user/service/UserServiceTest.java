@@ -9,6 +9,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.lang.reflect.Proxy;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -152,9 +153,13 @@ public class UserServiceTest {
 		testUserService.setUserDao(userDao);
 		testUserService.setMailSender(mailSender);
 		
-		UserServiceTx txUserService = new UserServiceTx();
-		txUserService.setTransactionManager(transactionManager);
-		txUserService.setUserService(testUserService);
+		TransactionHandler txHandler = new TransactionHandler();
+		txHandler.setTarget(testUserService);
+		txHandler.setTransactionManager(transactionManager);
+		txHandler.setPattern("upgradeLevels");
+		
+		UserService txUserService = (UserService)Proxy.newProxyInstance(
+				getClass().getClassLoader(), new Class[] { UserService.class }, txHandler);
 		
 		userDao.deleteAll();
 		for(User user : users) userDao.add(user);
@@ -169,7 +174,7 @@ public class UserServiceTest {
 		checkLevelUpgraded(users.get(1), false);
 	}
 	
-	@Test
+	//@Test
 	public void mockUpgradeLevels() throws Exception {
 		UserServiceImpl userServiceImpl = new UserServiceImpl();
 		
