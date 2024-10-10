@@ -6,11 +6,18 @@
        http://www.springframework.org/schema/context 
 	   http://www.springframework.org/schema/context/spring-context.xsd">
 
-	<bean id="userService" class="user.service.UserServiceTx">
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="userService" ref="userServiceImpl"/>
-	</bean>
+<!-- 	<bean id="userService" class="user.service.UserServiceTx"> -->
+<!-- 		<property name="transactionManager" ref="transactionManager"/> -->
+<!-- 		<property name="userService" ref="userServiceImpl"/> -->
+<!-- 	</bean> -->
 
+	<bean id="userService" class="user.service.TxProxyFactoryBean">
+		<property name="target" ref="userServiceImpl"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="pattern" value="upgradeLevels"/>
+		<property name="serviceInterface" value="user.service.UserService"/>
+	</bean>
+	
 	<bean id="userServiceImpl" class="user.service.UserServiceImpl">
 		<property name="userDao" ref="userDao"/>
 		<property name="mailSender" ref="mailSender"/>
