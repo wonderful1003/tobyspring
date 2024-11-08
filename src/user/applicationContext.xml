@@ -11,12 +11,12 @@
 <!-- 		<property name="userService" ref="userServiceImpl"/> -->
 <!-- 	</bean> -->
 
-	<bean id="userService" class="user.service.TxProxyFactoryBean">
-		<property name="target" ref="userServiceImpl"/>
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="pattern" value="upgradeLevels"/>
-		<property name="serviceInterface" value="user.service.UserService"/>
-	</bean>
+<!-- 	<bean id="userService" class="user.service.TxProxyFactoryBean"> -->
+<!-- 		<property name="target" ref="userServiceImpl"/> -->
+<!-- 		<property name="transactionManager" ref="transactionManager"/> -->
+<!-- 		<property name="pattern" value="upgradeLevels"/> -->
+<!-- 		<property name="serviceInterface" value="user.service.UserService"/> -->
+<!-- 	</bean> -->
 	
 	<bean id="userServiceImpl" class="user.service.UserServiceImpl">
 		<property name="userDao" ref="userDao"/>
@@ -36,12 +36,34 @@
 		<property name="dataSource" ref="dataSource"/>
 	</bean>
 
+	<bean id="transactionAdvice" class="learningtest.proxy.TransactionAdvice">
+		<property name="transactionManager" ref="transactionManager"/>
+	</bean>
+
+	<bean id="transactionPointcut" class="org.springframework.aop.support.NameMatchMethodPointcut">
+		<property name="mappedName" value="upgrade*"/>
+	</bean>
+
+	<bean id="transactionAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
+		<property name="advice" ref="transactionAdvice"/>
+		<property name="pointcut" ref="transactionPointcut"/>
+	</bean>
+
+	<bean id="userService" class="org.springframework.aop.framework.ProxyFactoryBean">
+		<property name="target" ref="userServiceImpl"/>
+		<property name="interceptorNames">
+			<list>
+				<value>transactionAdvisor</value>
+			</list>
+		</property>
+	</bean>
+	
 	<bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
 		<property name="driverClass" value="com.mysql.cj.jdbc.Driver"/>
 		<property name="url" value="jdbc:mysql://localhost:3306/test?serverTimezone=UTC&amp;characterEncoding=UTF-8"/>
 		<property name="username" value="root"/>
-<!-- 		<property name="password" value="admin"/>	을지로입구 -->
-		<property name="password" value="qwer!2345"/>	<!-- 양천향교 -->
+		<property name="password" value="admin"/>	<!-- 을지로입구 -->
+<!-- 		<property name="password" value="qwer!2345"/>	양천향교 -->
 	</bean>
 	
 </beans>
