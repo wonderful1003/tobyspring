@@ -8,6 +8,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static user.service.UserServiceImpl.MIN_LOGCOUNT_FOR_SILVER;
+import static user.service.UserServiceImpl.MIN_RECOMMEND_FOR_GOLD;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -38,39 +40,30 @@ import user.domain.User;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations="/**/user/applicationContext.xml")
 public class UserServiceTest {
-	@Autowired
-	UserService userService;
-
-	@Autowired
-	UserService testUserService;
-	
-	//@Autowired
-	UserServiceImpl userServiceImpl;
+	@Autowired 	UserService userService;
+	@Autowired	UserService testUserService;
+	@Autowired	UserDao userDao;
+	@Autowired	MailSender mailSender;
+	@Autowired	PlatformTransactionManager transactionManager;
+	@Autowired	ApplicationContext context;
 	
 	List<User> users;
 	
-	@Autowired
-	UserDao userDao;
+//	@Autowired
+//	DataSource dataSource;
 	
-	@Autowired
-	DataSource dataSource;
-
-	@Autowired
-	PlatformTransactionManager transactionManager;
+	//@Autowired
+//	UserServiceImpl userServiceImpl;
 	
-	@Autowired
-	MailSender mailSender;
 	
-	@Autowired
-	ApplicationContext context;
 	
 	@Before
 	public void setUp() {
 		users = Arrays.asList(
-				new User("bumjin", "박범진", "p1", Level.BASIC, userServiceImpl.MIN_LOGCOUNT_FOR_SILVER-1, 0, "a@a.com"),
-				new User("joytouch", "강명성", "p2", Level.BASIC, userServiceImpl.MIN_LOGCOUNT_FOR_SILVER, 0, "b@b.com"),
-				new User("erwins", "신승한", "p3", Level.SILVER, 60, userServiceImpl.MIN_RECOMMEND_FOR_GOLD-1, "c@c.com"),
-				new User("madnite1", "이상호", "p4", Level.SILVER, 60, userServiceImpl.MIN_RECOMMEND_FOR_GOLD, "d@d.com"),
+				new User("bumjin", "박범진", "p1", Level.BASIC, MIN_LOGCOUNT_FOR_SILVER+1, 0, "a@a.com"),
+				new User("joytouch", "강명성", "p2", Level.BASIC, MIN_LOGCOUNT_FOR_SILVER, 0, "b@b.com"),
+				new User("erwins", "신승한", "p3", Level.SILVER, 60, MIN_RECOMMEND_FOR_GOLD-1, "c@c.com"),
+				new User("madnite1", "이상호", "p4", Level.SILVER, 60, MIN_RECOMMEND_FOR_GOLD, "d@d.com"),
 				new User("green", "오민규", "p5", Level.GOLD, 100, 100, "e@e.com")
 		);
 	}
@@ -138,6 +131,7 @@ public class UserServiceTest {
 	
 	static class TestUserServiceImpl extends UserServiceImpl{
 		private String id = "madnite1";
+//		private String id = "";
 		
 		protected void upgradeLevel(User user) {
 			if (user.getId().equals(this.id)) throw new TestUserServiceException();
