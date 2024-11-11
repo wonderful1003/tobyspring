@@ -40,8 +40,11 @@ import user.domain.User;
 public class UserServiceTest {
 	@Autowired
 	UserService userService;
-	
+
 	@Autowired
+	UserService testUserService;
+	
+	//@Autowired
 	UserServiceImpl userServiceImpl;
 	
 	List<User> users;
@@ -133,12 +136,8 @@ public class UserServiceTest {
 		assertThat(userWithoutLevelRead.getLevel(), is(Level.BASIC));
 	}
 	
-	static class TestUserService extends UserServiceImpl{
-		private String id;
-		
-		private TestUserService(String id) {
-			this.id = id;
-		}
+	static class TestUserServiceImpl extends UserServiceImpl{
+		private String id = "madnite1";
 		
 		protected void upgradeLevel(User user) {
 			if (user.getId().equals(this.id)) throw new TestUserServiceException();
@@ -154,21 +153,11 @@ public class UserServiceTest {
 	@DirtiesContext
 	public void upgradeAllOrNothing() throws Exception {
 		
-		TestUserService testUserService = new TestUserService(users.get(3).getId());
-		testUserService.setUserDao(userDao);
-		testUserService.setMailSender(mailSender);
-		
-		ProxyFactoryBean txProxyFactoryBean = 
-				context.getBean("&userService", ProxyFactoryBean.class);
-		
-		txProxyFactoryBean.setTarget(testUserService);
-		UserService txUserService = (UserService) txProxyFactoryBean.getObject();
-		
 		userDao.deleteAll();
 		for(User user : users) userDao.add(user);
 		
 		try {
-			txUserService.upgradeLevels();
+			this.testUserService.upgradeLevels();
 			fail("TestUserServiceException expected");
 		} catch (TestUserServiceException e) {
 			// TODO: handle exception
