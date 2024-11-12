@@ -51,15 +51,20 @@
 		<property name="transactionManager" ref="transactionManager"/>
 	</bean>
 		
-	<bean id="transactionPointcut" class="learningtest.proxy.NameMatchClassMethodPointcut">
-		<property name="mappedClassName" value="*ServiceImpl"/>
-		<property name="mappedName" value="upgrade*"/>
-	</bean>
+<!-- 	<bean id="transactionPointcut" class="learningtest.proxy.NameMatchClassMethodPointcut"> -->
+<!-- 		<property name="mappedClassName" value="*ServiceImpl"/> -->
+<!-- 		<property name="mappedName" value="upgrade*"/> -->
+<!-- 	</bean> -->
 
+	<bean id="transactionPointcut" class="org.springframework.aop.aspectj.AspectJExpressionPointcut">
+		<property name="expression" value="execution(* *..*ServiceImpl.upgrade*(..))"/>
+	</bean>
+	
 	<bean id="transactionAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
 		<property name="advice" ref="transactionAdvice"/>
 		<property name="pointcut" ref="transactionPointcut"/>
 	</bean>
+
 
 	<!-- application components -->		
 	<bean id="userDao" class="user.dao.UserDaoJdbc">
