@@ -70,4 +70,11 @@ public class UserServiceImpl implements UserService{
 		default: throw new IllegalArgumentException("Unknown Level : "+currentLevel);
 		}
 	}
+
+	@Override	public void deleteAll() throws ClassNotFoundException, SQLException { userDao.deleteAll(); }
+	@Override	public User get(String id) throws ClassNotFoundException, SQLException {	return userDao.get(id);}
+	@Override	public List<User> getAll() {	return userDao.getAll();	}
+	@Override	public void update(User user) {userDao.update(user);}
+	
+	
 }
