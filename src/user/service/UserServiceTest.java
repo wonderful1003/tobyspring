@@ -33,6 +33,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +45,8 @@ import user.domain.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations="/**/user/applicationContext.xml")
+@Transactional
+@TransactionConfiguration(defaultRollback = false)
 public class UserServiceTest {
 	@Autowired 	UserService userService;
 	@Autowired	UserService testUserService;
