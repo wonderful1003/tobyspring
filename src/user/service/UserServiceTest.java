@@ -30,6 +30,7 @@ import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -140,6 +141,7 @@ public class UserServiceTest {
 	
 	@Test 
 	@Transactional(readOnly=true)
+	@Rollback(false)
 	public void transactionSync() throws ClassNotFoundException, SQLException {
 		userDao.deleteAll();
 		userService.add(users.get(0)); 
