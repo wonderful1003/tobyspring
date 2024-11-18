@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import user.domain.Level;
 import user.domain.User;
+import user.sqlservice.SqlService;
 
 public class UserDaoJdbc implements UserDao{
 	
@@ -25,6 +26,12 @@ public class UserDaoJdbc implements UserDao{
 	
 	public void setSqlMap(Map<String, String> sqlMap) {
 		this.sqlMap = sqlMap;
+	}
+
+	private SqlService sqlService;
+	
+	public void setSqlService(SqlService sqlService) {
+		this.sqlService = sqlService;
 	}
 
 	private RowMapper<User> userMapper =  
@@ -43,31 +50,31 @@ public class UserDaoJdbc implements UserDao{
 		};
 	
 	public void add(final User user) throws ClassNotFoundException, SQLException{
-		this.jdbcTemplate.update(this.sqlMap.get("add"), user.getId(),user.getName(),user.getPassword(),
+		this.jdbcTemplate.update(this.sqlService.getSql("userAdd"), user.getId(),user.getName(),user.getPassword(),
 				user.getLevel().intValue(), user.getLogin(), user.getRecommend(), user.getEmail());
 	}
 
 	public void deleteAll() throws SQLException, ClassNotFoundException{
-		this.jdbcTemplate.update(this.sqlMap.get("deleteAll"));
+		this.jdbcTemplate.update(this.sqlService.getSql("userDeleteAll"));
 	}
 	
 	public User get(String id) throws ClassNotFoundException, SQLException{
-		return this.jdbcTemplate.queryForObject(this.sqlMap.get("get"),
+		return this.jdbcTemplate.queryForObject(this.sqlService.getSql("userGet"),
 			new Object[] {id}, this.userMapper);
 	}
 
 	public int getCount() throws SQLException{
-		return this.jdbcTemplate.queryForObject(this.sqlMap.get("getCount"), Integer.class);
+		return this.jdbcTemplate.queryForObject(this.sqlService.getSql("userGetCount"), Integer.class);
 	}
 	
 	public List<User> getAll() {
-		return this.jdbcTemplate.query(this.sqlMap.get("getAll"), this.userMapper);
+		return this.jdbcTemplate.query(this.sqlService.getSql("userGetAll"), this.userMapper);
 	}
 
 	@Override
 	public void update(User user) {
 		this.jdbcTemplate.update(
-				this.sqlMap.get("update"), user.getName(),user.getPassword(),
+				this.sqlService.getSql("userUpdate"), user.getName(),user.getPassword(),
 				user.getLevel().intValue(), user.getLogin(), user.getRecommend(), user.getEmail(), user.getId());
 
 		
