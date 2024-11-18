@@ -41,7 +41,7 @@ public class UserDaoTest {
 		this.user3 = new User("bumJin", "박범진", "springno3", Level.GOLD, 100, 40, null);
 	}
 	
-	//@Test
+	@Test
 	public void addAndGet() throws SQLException, ClassNotFoundException {
 		
 		dao.deleteAll(); 
@@ -89,7 +89,7 @@ public class UserDaoTest {
 		dao.get("unknown_id");
 	}
 	
-	//@Test
+	@Test
 	public void getAll() throws ClassNotFoundException, SQLException {
 		dao.deleteAll();
 		

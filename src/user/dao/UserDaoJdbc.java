@@ -3,6 +3,7 @@ package user.dao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -20,10 +21,10 @@ public class UserDaoJdbc implements UserDao{
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}
 	
-	private String sqlAdd;
+	private Map<String, String> sqlMap;
 	
-	public void setSqlAdd(String sqlAdd) {
-		this.sqlAdd = sqlAdd;
+	public void setSqlMap(Map<String, String> sqlMap) {
+		this.sqlMap = sqlMap;
 	}
 
 	private RowMapper<User> userMapper =  
@@ -42,41 +43,34 @@ public class UserDaoJdbc implements UserDao{
 		};
 	
 	public void add(final User user) throws ClassNotFoundException, SQLException{
-		this.jdbcTemplate.update(this.sqlAdd, user.getId(),user.getName(),user.getPassword(),
+		this.jdbcTemplate.update(this.sqlMap.get("add"), user.getId(),user.getName(),user.getPassword(),
 				user.getLevel().intValue(), user.getLogin(), user.getRecommend(), user.getEmail());
 	}
 
 	public void deleteAll() throws SQLException, ClassNotFoundException{
-		this.jdbcTemplate.update("delete from user");
+		this.jdbcTemplate.update(this.sqlMap.get("deleteAll"));
 	}
 	
 	public User get(String id) throws ClassNotFoundException, SQLException{
-		return this.jdbcTemplate.queryForObject("select * from user where id =?",
+		return this.jdbcTemplate.queryForObject(this.sqlMap.get("get"),
 			new Object[] {id}, this.userMapper);
 	}
 
 	public int getCount() throws SQLException{
-		return this.jdbcTemplate.queryForObject("select count(*) from user", Integer.class);
+		return this.jdbcTemplate.queryForObject(this.sqlMap.get("getCount"), Integer.class);
 	}
 	
 	public List<User> getAll() {
-		return this.jdbcTemplate.query("select * from user order by id", this.userMapper);
+		return this.jdbcTemplate.query(this.sqlMap.get("getAll"), this.userMapper);
 	}
 
 	@Override
 	public void update(User user) {
 		this.jdbcTemplate.update(
-				"update user set name =?, password = ?, level = ?, login = ?, "
-				+ "recommend = ?, email=? where id = ? ", user.getName(),user.getPassword(),
+				this.sqlMap.get("update"), user.getName(),user.getPassword(),
 				user.getLevel().intValue(), user.getLogin(), user.getRecommend(), user.getEmail(), user.getId());
 
 		
 	}
 	
-	
-//	public static void main(String[] args) throws ClassNotFoundException, SQLException{
-//		
-//		JUnitCore.main("tobyspring.UserDaoTest");
-//		
-//	}	
 }
