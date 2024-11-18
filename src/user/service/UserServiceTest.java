@@ -139,14 +139,19 @@ public class UserServiceTest {
 	
 	@Test 
 	public void transactionSync() throws ClassNotFoundException, SQLException {
+		userDao.deleteAll();
+		assertThat(userDao.getCount(), is(0));
+		
 		DefaultTransactionDefinition txDefinition = new DefaultTransactionDefinition();
 		TransactionStatus txStatus = transactionManager.getTransaction(txDefinition);
 		
-		userService.deleteAll(); 
 		userService.add(users.get(0)); 
 		userService.add(users.get(1));
+		assertThat(userDao.getCount(), is(2));
 		
-		transactionManager.commit(txStatus);
+		transactionManager.rollback(txStatus);
+		assertThat(userDao.getCount(), is(0));
+		
 	}
 
 	static class TestUserServiceImpl extends UserServiceImpl{
