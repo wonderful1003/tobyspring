@@ -96,9 +96,9 @@
 	<tx:annotation-driven />
 	
 	<!-- application components -->		
-	<bean id="userDao" class="user.dao.UserDaoJdbc">
-		<property name="dataSource" ref="dataSource"/>
-	</bean>
+<!-- 	<bean id="userDao" class="user.dao.UserDaoJdbc"> -->
+<!-- 		<property name="dataSource" ref="dataSource"/> -->
+<!-- 	</bean> -->
 
 	<bean id="userService" class="user.service.UserServiceImpl">
 		<property name="userDao" ref="userDao"/>
@@ -112,4 +112,12 @@
 	<bean id="mailSender" class="user.service.DummyMailSender">
 		<property name="host" value="mail.server.com"/>
 	</bean>
+	
+	<!-- dao to xml -->		
+	<bean id="userDao" class="user.dao.UserDaoJdbc">
+		<property name="dataSource" ref="dataSource"/>
+		<property name="sqlAdd" value="insert into user(id, name, password, 
+		level, login, recommend, email) values(?,?,?,?,?,?,?)"/>
+	</bean>
+	
 </beans>

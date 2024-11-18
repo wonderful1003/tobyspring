@@ -19,6 +19,12 @@ public class UserDaoJdbc implements UserDao{
 	public void setDataSource(DataSource dataSource) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}
+	
+	private String sqlAdd;
+	
+	public void setSqlAdd(String sqlAdd) {
+		this.sqlAdd = sqlAdd;
+	}
 
 	private RowMapper<User> userMapper =  
 		new RowMapper<User>() {
@@ -36,8 +42,7 @@ public class UserDaoJdbc implements UserDao{
 		};
 	
 	public void add(final User user) throws ClassNotFoundException, SQLException{
-		this.jdbcTemplate.update("insert into user(id, name, password, level, login, recommend, email) "
-				+ "values(?,?,?,?,?,?,?)", user.getId(),user.getName(),user.getPassword(),
+		this.jdbcTemplate.update(this.sqlAdd, user.getId(),user.getName(),user.getPassword(),
 				user.getLevel().intValue(), user.getLogin(), user.getRecommend(), user.getEmail());
 	}
 

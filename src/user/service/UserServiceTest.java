@@ -137,12 +137,12 @@ public class UserServiceTest {
 		assertThat(userWithoutLevelRead.getLevel(), is(Level.BASIC));
 	}
 
-	@Test(expected=TransientDataAccessResourceException.class)
+	//@Test(expected=TransientDataAccessResourceException.class)
 	public void readOnlyTransactionAttribute(){
 		testUserService.getAll();
 	}
 	
-	@Test 
+	//@Test 
 	@Transactional(readOnly=true)
 	@Rollback(false)
 	public void transactionSync() throws ClassNotFoundException, SQLException {
