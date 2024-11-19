@@ -20,7 +20,7 @@ import springbook.user.domain.Level;
 import springbook.user.domain.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations="/**/user/applicationContext.xml")
+@ContextConfiguration(locations="/applicationContext.xml")
 @DirtiesContext
 public class UserDaoTest {
 	

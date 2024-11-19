@@ -100,38 +100,41 @@
 <!-- 		<property name="dataSource" ref="dataSource"/> -->
 <!-- 	</bean> -->
 
-	<bean id="userService" class="user.service.UserServiceImpl">
+	<bean id="userService" class="springbook.user.service.UserServiceImpl">
 		<property name="userDao" ref="userDao"/>
 		<property name="mailSender" ref="mailSender"/>
 	</bean>
 	
 	<bean id="testUserService" 
-	 	  class="user.service.UserServiceTest$TestUserServiceImpl"
+	 	  class="springbook.user.service.UserServiceTest$TestUserServiceImpl"
 		  parent="userService"/>
 
-	<bean id="mailSender" class="user.service.DummyMailSender">
+	<bean id="mailSender" class="springbook.user.service.DummyMailSender">
 		<property name="host" value="mail.server.com"/>
 	</bean>
 	
 	<!-- dao to xml -->		
-	<bean id="userDao" class="user.dao.UserDaoJdbc">
+	<bean id="userDao" class="springbook.user.dao.UserDaoJdbc">
 		<property name="dataSource" ref="dataSource"/>
 		<property name="sqlService" ref="sqlService"/>
 	</bean>
 	
-	<bean id="sqlService" class="user.sqlservice.SimpleSqlService">
-		<property name="sqlMap">
-			<map>
-				<entry key="userAdd" value="insert into user(id, name, password, 
-										level, login, recommend, email) values(?,?,?,?,?,?,?)" />
-				<entry key="userGet" value="select * from user where id =?" />
-				<entry key="userGetAll" value="select * from user order by id" />
-				<entry key="userDeleteAll" value="delete from user" />
-				<entry key="userGetCount" value="select count(*) from user" />
-				<entry key="userUpdate" value="update user set name =?, password = ?, 
-								level = ?, login = ?, recommend = ?, email=? where id = ? " />
-			</map> 
-		</property>	
+<!-- 	<bean id="sqlService" class="user.sqlservice.SimpleSqlService"> -->
+<!-- 		<property name="sqlMap"> -->
+<!-- 			<map> -->
+<!-- 				<entry key="userAdd" value="insert into user(id, name, password,  -->
+<!-- 										level, login, recommend, email) values(?,?,?,?,?,?,?)" /> -->
+<!-- 				<entry key="userGet" value="select * from user where id =?" /> -->
+<!-- 				<entry key="userGetAll" value="select * from user order by id" /> -->
+<!-- 				<entry key="userDeleteAll" value="delete from user" /> -->
+<!-- 				<entry key="userGetCount" value="select count(*) from user" /> -->
+<!-- 				<entry key="userUpdate" value="update user set name =?, password = ?,  -->
+<!-- 								level = ?, login = ?, recommend = ?, email=? where id = ? " /> -->
+<!-- 			</map>  -->
+<!-- 		</property>	 -->
+<!-- 	</bean> -->
+
+	<bean id="sqlService" class="springbook.user.sqlservice.XmlSqlService">
 	</bean>
-	
+
 </beans>
