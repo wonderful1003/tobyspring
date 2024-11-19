@@ -1,4 +1,4 @@
-package JUnit;
+package springbook.learningtest.junit;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;

@@ -1,4 +1,4 @@
-package user.dao;
+package springbook.user.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,9 +10,9 @@ import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
-import user.domain.Level;
-import user.domain.User;
-import user.sqlservice.SqlService;
+import springbook.user.domain.Level;
+import springbook.user.domain.User;
+import springbook.user.sqlservice.SqlService;
 
 public class UserDaoJdbc implements UserDao{
 	

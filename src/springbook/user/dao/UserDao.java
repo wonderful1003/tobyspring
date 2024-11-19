@@ -1,9 +1,9 @@
-package user.dao;
+package springbook.user.dao;
 
 import java.sql.SQLException;
 import java.util.List;
 
-import user.domain.User;
+import springbook.user.domain.User;
 
 public interface UserDao {
 	void add(User user) throws ClassNotFoundException, SQLException;

@@ -1,4 +1,4 @@
-package learningtest.spring.pointcut;
+package springbook.learningtest.spring.pointcut;
 
 public interface TargetInterface {
 	public void hello();

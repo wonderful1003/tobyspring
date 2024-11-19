@@ -1,4 +1,4 @@
-package user.service;
+package springbook.user.service;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -8,8 +8,8 @@ import java.util.Iterator;
 import org.junit.Before;
 import org.junit.Test;
 
-import user.domain.Level;
-import user.domain.User;
+import springbook.user.domain.Level;
+import springbook.user.domain.User;
 
 public class UserTest {
 	User user;

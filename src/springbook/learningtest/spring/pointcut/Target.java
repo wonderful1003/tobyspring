@@ -1,4 +1,4 @@
-package learningtest.spring.pointcut;
+package springbook.learningtest.spring.pointcut;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;

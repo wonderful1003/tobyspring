@@ -1,4 +1,4 @@
-package user.service;
+package springbook.user.service;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -7,7 +7,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
-import user.domain.User;
+import springbook.user.domain.User;
 
 public class UserServiceTx implements UserService{
 

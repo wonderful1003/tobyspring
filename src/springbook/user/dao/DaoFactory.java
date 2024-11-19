@@ -1,4 +1,4 @@
-package user.dao;
+package springbook.user.dao;
 
 import javax.sql.DataSource;
 

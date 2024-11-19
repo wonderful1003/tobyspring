@@ -1,11 +1,11 @@
-package user.service;
+package springbook.user.service;
 
 import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import user.domain.User;
+import springbook.user.domain.User;
 
 @Transactional
 public interface UserService {

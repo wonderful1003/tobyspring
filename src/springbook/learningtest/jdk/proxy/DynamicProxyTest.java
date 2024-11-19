@@ -1,4 +1,4 @@
-package learningtest.proxy;
+package springbook.learningtest.jdk.proxy;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;

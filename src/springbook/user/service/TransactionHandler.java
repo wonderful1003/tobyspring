@@ -1,4 +1,4 @@
-package user.service;
+package springbook.user.service;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;

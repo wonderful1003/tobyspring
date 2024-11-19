@@ -1,4 +1,4 @@
-package user;
+package springbook.user.dao;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -15,9 +15,9 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import user.dao.UserDaoJdbc;
-import user.domain.Level;
-import user.domain.User;
+import springbook.user.dao.UserDaoJdbc;
+import springbook.user.domain.Level;
+import springbook.user.domain.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations="/**/user/applicationContext.xml")

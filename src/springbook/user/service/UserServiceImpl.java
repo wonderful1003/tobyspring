@@ -1,4 +1,4 @@
-package user.service;
+package springbook.user.service;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -7,9 +7,9 @@ import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
-import user.dao.UserDao;
-import user.domain.Level;
-import user.domain.User;
+import springbook.user.dao.UserDao;
+import springbook.user.domain.Level;
+import springbook.user.domain.User;
 
 public class UserServiceImpl implements UserService{
 

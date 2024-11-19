@@ -1,6 +1,6 @@
-package user.dao;
+package springbook.user.dao;
 
-import user.domain.User;
+import springbook.user.domain.User;
 import java.sql.SQLException;
 
 import org.springframework.context.ApplicationContext;

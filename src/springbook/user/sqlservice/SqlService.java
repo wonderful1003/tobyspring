@@ -1,4 +1,4 @@
-package user.sqlservice;
+package springbook.user.sqlservice;
 
 
 public interface SqlService {

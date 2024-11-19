@@ -1,4 +1,4 @@
-package user.service;
+package springbook.user.service;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -8,8 +8,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static user.service.UserServiceImpl.MIN_LOGCOUNT_FOR_SILVER;
-import static user.service.UserServiceImpl.MIN_RECOMMEND_FOR_GOLD;
+import static springbook.user.service.UserServiceImpl.MIN_LOGCOUNT_FOR_SILVER;
+import static springbook.user.service.UserServiceImpl.MIN_RECOMMEND_FOR_GOLD;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -39,9 +39,9 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
-import user.dao.UserDao;
-import user.domain.Level;
-import user.domain.User;
+import springbook.user.dao.UserDao;
+import springbook.user.domain.Level;
+import springbook.user.domain.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations="/**/user/applicationContext.xml")

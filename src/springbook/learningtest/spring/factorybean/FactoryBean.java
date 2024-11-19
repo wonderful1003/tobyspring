@@ -1,4 +1,4 @@
-package factory;
+package springbook.learningtest.spring.factorybean;
 
 public interface FactoryBean<T> {
 	T getObject() throws Exception;

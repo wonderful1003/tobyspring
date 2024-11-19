@@ -1,10 +1,10 @@
-package user.dao;
+package springbook.user.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import user.domain.User;
+import springbook.user.domain.User;
 
 public class AddStatement implements StatementStrategy {
 	
