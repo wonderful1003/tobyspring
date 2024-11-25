@@ -4,13 +4,14 @@
 java.util.*, 
 java.sql.*, 
 javax.sql.*, 
-java.net.ConnectException, 
-java.net.HttpURLConnection, 
-java.net.URL,         
+com.eactive.eai.rms.onl.common.util.*,
 com.eactive.eai.rms.common.datasource.*,
 com.eactive.eai.rms.common.util.StringUtils,
 com.eactive.eai.common.util.*,
-com.eactive.eai.rms.onl.common.util.*
+java.net.ConnectException, 
+java.net.HttpURLConnection, 
+java.net.URL,         
+java.net.URLConnection
 " %>		        
 
 <%!		
@@ -44,13 +45,31 @@ private String getServerURL(String instanceName) throws Exception{
 	try{
 		ds = getDataSourceByServiceType(serviceType); // ds 정보 갖고오기
 		conn = ds.getConnection();					 // Connection 생성
-		stmt = conn.createStatement(); 				 // Statement 생성
-		String sql = "select eaisevrip as ip, sevrlsnportname as port " 
+
+		String sql = "";
+		if(StringUtils.equals("APIGW", serviceType)){
+			sql = "select eaisevrip ip, sevrlsnportname port " 
 					+ "from ngwown.tseaisy02 "
-					+ "where eaisevrinstncname = "+"'"+instanceName+"'";
-		rs = stmt.executeQuery(sql); // 쿼리 실행 하여 ResultSet 생성
+					+ "where eaisevrinstncname = ? ";
+		}else{
+			//\'\\d+\\.\\d+.\\d+.\\d+\' -> ip주소 형식 추출
+			sql = "select regexp_substr(prptygroupname, \'\\d+\\.\\d+.\\d+.\\d+\') ip, " 
+					+ "max(case when prptyname='WEBSERVERPOT' then prpty2val end) port, " 
+					+ "max(case when prptyname='protocol' then prpty2val end) protocol " 
+					+ "from ngpown.tseairm24 "
+					+ "where prptygroupname = ? "
+					+ "group by prptygroupname";
+		}
+		
+		pstmt = conn.prepareStatement(sql); // Statement 생성
+		pstmt.setString(1, instanceName);
+		rs = pstmt.executeQuery(); // 쿼리 실행 하여 ResultSet 생성
 		while(rs.next()){
-			conUrl = "http://"+rs.getString("ip")+":"+rs.getString("port")+"/EngineLogViewer.jsp";					
+			if(StringUtils.equals("APIGW", serviceType)){
+				conUrl = "http://"+rs.getString("ip")+":"+rs.getString("port")+"/EngineLogViewer.jsp";					
+			}else{
+				conUrl = rs.getString("protocol")+"://"+rs.getString("ip")+":"+rs.getString("port")+"/monitoring/EngineLogViewer.jsp";
+			}
 		}
 		return conUrl;
 	}catch(Exception e){
@@ -58,27 +77,9 @@ private String getServerURL(String instanceName) throws Exception{
 	}finally{
 		// close 순서를 생성한 순의 역순으로 rs > stmt > conn 순으로 close 해야함
 		// 각 객체마다 close시 nullpoint 에러 발생 가능하고 close 할때도 exception이 발생할 수 있어 null체크와 try catch필요
-		if(rs != null){
-			try{
-				rs.close();
-			}catch(SQLException sqle){
-				return conUrl = "sql error : "+sqle.getMessage();
-			}
-		}
-		if(stmt != null){
-			try{
-				stmt.close();
-			}catch(SQLException sqle){
-				return conUrl = "sql error : "+sqle.getMessage();
-			}
-		}
-		if(conn != null){
-			try{
-				conn.close();
-			}catch(SQLException sqle){
-				return conUrl = "sql error : "+sqle.getMessage();
-			}
-		}								
+		if(rs != null){try{rs.close();}catch(SQLException sqle){return conUrl = "sql error : "+sqle.getMessage();}}
+		if(pstmt != null){try{pstmt.close();}catch(SQLException sqle){return conUrl = "sql error : "+sqle.getMessage();}}
+		if(conn != null){try{conn.close();}catch(SQLException sqle){return conUrl = "sql error : "+sqle.getMessage();}}
 	}		
 }
 	
@@ -96,7 +97,7 @@ private HashMap execute(HashMap<String,String> paramMap) throws Exception{
 		
 		String instanceUrl = getServerURL(instanceName); // instanceUrl 가져오기
 		
-		if(instanceUrl.contains("error")){
+		if(instanceUrl.contains("error") || StringUtils.isBlank(instanceUrl)){
 			resultMap.put("result","[서버 url 생성시 에러 발생] "+instanceUrl);
 		}else{
 			// Http Connection 생성
@@ -157,15 +158,21 @@ private HashMap execute(HashMap<String,String> paramMap) throws Exception{
 	response.setHeader("Expires", "0"); 				// 프록시가 서버에서 새로운 콘텐츠를 가져오도록 강제
 	
 	String run = request.getParameter("run"); 		// submit한 request parameter 세팅
-	String instanceName = request.getParameter("instanceName");
 	String filePath = request.getParameter("filePath");
 	String rowCount = request.getParameter("rowCount");
+	String instanceName = request.getParameter("inputInstName");
 	
 	if(run == null) run="";
-	if(instanceName == null) instanceName="";
 	if(filePath == null) filePath="";
 	if(rowCount == null) rowCount=""; conUrl="";
 	if(conUrl == null) conUrl="";
+	if(instanceName == null) instanceName="";
+
+	if(StringUtils.containsIgnoreCase(instanceName, "Svr")){
+		serviceType = "APIGW";
+	}else{
+		serviceType = "MONITORING";
+	}
 	
 	HashMap runResult = new HashMap();
 	
@@ -185,7 +192,6 @@ private HashMap execute(HashMap<String,String> paramMap) throws Exception{
  <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
  <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
  <%@ taglib uri="http://http://www.springframework.org/tags" prefix="spring" %>
- <%@ include file="/jsp/common/include/localemessage.jsp" %>
  <script language="javascript" src="<c:url value="/common/js/common.js" />"></script>
  <jsp:include page="/jsp/common/include/css.jsp" />
  <jsp:include page="/jsp/common/include/script.jsp" />
@@ -201,19 +207,69 @@ $(document).ready(function(){
 	$('select[name=instanceName]').val("<%=instanceName%>");		
 	$('input[name=rowCount]').val("<%=rowCount%>");
 
+	var sysdiv = "<%=instanceName%>";
+	if($('input[name=systemType]').val()=='1' && sysdiv.indexOf('Moni') == -1 ){
+		$("#systemType_engine").attr('checked',true);
+		$('#engineInstName').show();
+		$('#emsInstName').hide();
+	}else{
+		$("#systemType_ems").attr('checked',true);
+		$('#emsInstName').show();
+		$('#engineInstName').hide();
+	}
+
+	//라디오 변경이벤트
+	if($('input[name=systemType]').change(function(){
+		if($('input[name=systemType]').prop('checked')){
+			$('#engineInstName').val("선택안함");
+			$('#engineInstName').show();
+			$('#emsInstName').hide();
+		}else{
+			$('#emsInstName').val("선택안함");
+			$('#emsInstName').show();
+			$('#engineInstName').hide();
+		}
+	})	
+	
+	
 	// 요청 후 받은 로그가 없으면 인스턴스명 초기화 및 resultData 초기화
 	var resultData = $('#resultData').val().slice(0,4);
 	if(resultData == 'null'){
 		$('select[name=instanceName]').val("선택안함");
 		$('#resultData').val(' ');
 	}
+	
+	$("#btn_refresh").click(function(){
+		const engineRadio = document.getElementById("systemType_engine");
+		engineRadio.checked = true;
+		
+		$('#resultData').val('');
+		$('input[name=filePath]').val('');
+		$('input[name=rowCount]').val('');
+		$('#engineInstName').val("선택안함");
+		$('#engineInstName').show();
+		$('#emsInstName').hide();
+	});
 
 	$("#btn_submit").click(function(){
 		// validation 체크
-		var instanceName = $('select[name=instanceName]').val();
-		if(instanceName == "선택안함" || instanceName == null){
-			alert("인스턴스 명을 선택해주세요");
-			return;
+		const systemType = $('input[name=systemType]').prop('checked') ? '1' : '0';
+		const inputInstName = document.getElementById("inputInstName");
+		
+		if(systemType == '1'){
+			var engineInstName = $('#engineInstName').val();
+			inputInstName.value = engineInstName;
+			if(engineInstName == "선택안함" || engineInstName == null){
+				alert("인스턴스 명을 선택해주세요");
+				return;
+			}
+		}else{
+			var emsInstName = $('#emsInstName').val();
+			inputInstName.value = emsInstName;
+			if(emsInstName == "선택안함" || emsInstName == null){
+				alert("인스턴스 명을 선택해주세요");
+				return;
+			}
 		}
 		var filePath = $('input[name=filePath]').val();
 		if(filePath == "" || filePath == null){
@@ -242,61 +298,87 @@ $(document).ready(function(){
 <div class="right_box">
 	<div class="cont	ent_top">
 		<ul class="path"	>
-			<li><a href="#">${rmsMenuPath}</a></li>
 		</ul>
 	</div>
 	<div class="content_middle">
 		<div class="search_wrap">
-			<button type="button" class="cssbtn" id="btn_submit" level="W">
-				<i class="material-icons">expand_circle_down</i> <%= localeMessage.getString("buttone.operate")%>
-			</button>
+			<button type="button" class="cssbtn" id="btn_refresh">초기화</button>
+			<button type="button" class="cssbtn" id="btn_submit">실행</button>
 		</div>
 		<div class="title">logViewer</div>
 		<table class="table_row" align="center">
 			<form method="post" name="frm">
 				<tr>
+					<!-- 시스템선택 추가 -->
+					<th align="right" width="80px">
+						시스템 : 
+					</th>
+					<td align="left" width="180px">
+						<input type="radio" value="1" name="systemType" id="systemType_engine" checked/>
+						<label for="systemType_engine">engine</label>
+						<input type="radio" value="0" name="systemType" id="systemType_ems" />
+						<label for="systemType_ems">ems</label>
+					</td>
 					<th align="right" width="80px">
 						인스턴스 명 : 
 					</th>
 					<td align="left" width="200px">
 						<div class="select-style">
-							<select name="instanceName">
-								<%
-								 Connection con = null;
-								 Statement instanceStmt = null;
-								 ResultSet instanceRs = null;
+							<%
+								Connection engineConn = null;
+								Connection emsConn = null;
+
+								PreparedStatement engineInstStmt = null;
+								PreparedStatement propStmt = null;
+								PreparedStatement emsInstStmt = null;
 								 
-								 Statement propStmt = null;
-								 ResultSet propRs = null;
+								ResultSet emgineInstRs = null;
+								ResultSet propRs = null;
+								ResultSet emsInstRs = null;
 								
 								try{
+									/* engine db execute */
+									serviceType = "APIGW";
 									ds = getDataSourceByServiceType(serviceType);						
-									conn = ds.getConnection();
+									engineConn = ds.getConnection();
 									// 커넥션까지 생성한 후 쿼리를 두번 날려서 resultSet을 두개 가져올수 있음
 									
 									// 인스턴스명 가져오기
-									instanceStmt = conn.createStatement();
-									String instanceSql = "select eaisevrinstncname CODE, eaisevrinstncname NAME "
-											+ "from ngwown.tseaisy02";
-											+ "where eaisevrinstncname <> 'all' and eaisevrinstncname <> 'null' ";
+									String engineInstSql = "select eaisevrinstncname CODE, eaisevrinstncname NAME "
+											+ "from ngwown.tseaisy02"
+											+ "where eaisevrinstncname <> 'all' and eaisevrinstncname <> 'null' "
 											+ "order by name asc";
-									instanceRs = instanceStmt.executeQuery(instanceSql);
+									engineInstStmt = engineConn.prepareStatement(engineInstSql);
+									engineInstRs = engineInstStmt.executeQuery();
 									
 									// 프로퍼티 가져오기
-									propStmt = conn.createStatement();
 									String propSql = "select prpty2van path "
 											+ "from ngwown.tseaicm03 "
 											+ "where prptyname = 'log.directory.prefix' ";
-									propRs = propStmt.executeQuery(propSql);
-								%>
-								<option value="선택안함">선택안함</option> <!--인스턴스명 디폴트값-->
-								 <%
-									 while(instanceRs.next()){		 		 
-								 %>	  
-									<option value="<%= instanceRs.getString("CODE") %>"><%= instanceRs.getString("NAME") %></option> <!--인스턴스명 디폴트값-->
-								 <%
-									}
-						 
+									propStmt = engineConn.prepareStatement(propSql);
+									propRs = propStmt.executeQuery();
+									
+									/* ems db execute */
+									String emsInstSql = "select prptygroupname code, prptygroupdesc name "
+											+ "from ngpown.tseairm23 "
+											+ "where prptygroupname <> 'Simulator' and prptygroupname <> 'null' "
+											+ "order by prptygroupname asc ";
+									emsInstStmt = emsConn.prepareStatement(emsInstSql);
+									emsInstRs = emsInstStmt.executeQuery();
+							%>
+							<select name="instanceName" id = "engineInstName">
+								<option value="선택안함">선택안함 engine</option> <!--인스턴스명 디폴트값-->
+								 <% while(engineInstRs.next()){ %>	  
+									<option value="<%= engineInstRs.getString("CODE") %>"><%= engineInstRs.getString("NAME") %></option>
+								 <% } %>
+							</select>	 
+							<select name="instanceName" id = "emsInstName">
+								<option value="선택안함">선택안함 ems</option> <!--인스턴스명 디폴트값-->
+								 <% while(emsInstRs.next()){ %>	  
+									<option value="<%= emsInstRs.getString("CODE") %>"><%= emsInstRs.getString("NAME") %></option>
+								 <% } %>
+							</select>	 
+							<% 						 
 									while(propRs.next()){		 		 
 										if(StringUtils.isEmpty(filePath)){
 											filePath=propRs.getString("PATH");
@@ -307,15 +389,26 @@ $(document).ready(function(){
 								}finally{
 									// 자원을 닫는 순서는 자원을 연 순서의 역순으로 rs > stmt > conn 으로 해야함 
 									// 자원 연거는 모두 닫아줘야함 두개 열었으면 두개 다 닫아줘야함
-									if(instanceRs != null){try{instanceRs.close();}catch(SQLException sqle){}}			
+									if(emsInstRs != null){try{emsInstRs.close();}catch(SQLException sqle){}}			
 									if(propRs != null){try{propRs.close();}catch(SQLException sqle){}}	
-									if(instanceStmt != null){try{instanceStmt.close();}catch(SQLException sqle){}}
+									if(emgineInstRs != null){try{emgineInstRs.close();}catch(SQLException sqle){}}			
+									if(emsInstStmt != null){try{emsInstStmt.close();}catch(SQLException sqle){}}
 									if(propStmt != null){try{propStmt.close();}catch(SQLException sqle){}}
-									if(conn != null){try{conn.close();}catch(SQLException sqle){}} 				
+									if(engineInstStmt != null){try{engineInstStmt.close();}catch(SQLException sqle){}}
+									if(emsConn != null){try{emsConn.close();}catch(SQLException sqle){}} 				
+									if(engineConn != null){try{engineConn.close();}catch(SQLException sqle){}} 				
 								}	
-								%>
-							</select>
-						</div>					
+							%>
+						</div>		
+							<input type="hidden" class="form-control" id="inputInstName" name="inputInstName"/>
+					</td>
+					<th align="right" width="110px">
+						ROW수 (5만이하) :  
+					</th>
+					<td align="left" width="110px">
+						<div class="select-style">
+							<input type="text" class="form-control" id="rowCount" name="rowCount" />
+						</div>
 					</td>
 					<th align="right" width="80px">
 						파일 경로 : 
@@ -323,14 +416,6 @@ $(document).ready(function(){
 					<td align="left">
 						<div class="select-style">
 							<input type="text" class="form-control" id="filePath" name="filePath" value="<%=filePath%>"/>
-						</div>
-					</td>
-					<th align="right" width="110px">
-						ROW수 (5만이하) :  
-					</th>
-					<td align="left">
-						<div class="select-style">
-							<input type="text" class="form-control" id="rowCount" name="rowCount" />
 						</div>
 					</td>
 				</tr>

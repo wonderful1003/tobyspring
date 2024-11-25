@@ -16,7 +16,7 @@ private void call(HttpServletRequest request, HttpServletResponse response) thro
 	
 	 try{
 		List<String> requestLine = IOUtils.readLines(request.getInputStream(), "UTF-8");
-		STring reqBody = StringUtils.join(requestLine, System.lineseparator());
+		String reqBody = StringUtils.join(requestLine, System.lineSeparator());
 		
 		String result = execute(reqBody); // file read
 		
