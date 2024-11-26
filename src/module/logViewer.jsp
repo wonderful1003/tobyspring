@@ -11,7 +11,10 @@ com.eactive.eai.common.util.*,
 java.net.ConnectException, 
 java.net.HttpURLConnection, 
 java.net.URL,         
-java.net.URLConnection
+javax.net.ssl.*,
+javax.net.SocketFactory,
+java.security.cert.X509Certificate,
+java.security.SecureRandom
 " %>		        
 
 <%!		
@@ -28,7 +31,7 @@ private DataSource getDataSourceByServiceType(String serviceType) throws Excepti
 	DataSourceType dataType = DataSourceTypeManager.getDataSourceType(serviceType); //JNDI 정보 갖고 오기
 	String jndiName 		= dataType.getJndiName(); 		//JNDI 명 가져오기
 	ServiceLocator sl 	= ServiceLocator.getInstance(); 	//DataSource 가져오기
-	DataSource sl 		= sl.getDataSource(jndiName); 	//JNDI 명에 해당하는 DataSource 가져오기
+	DataSource ds 		= sl.getDataSource(jndiName); 	//JNDI 명에 해당하는 DataSource 가져오기
 	
 	return ds;
 }
@@ -89,65 +92,166 @@ private HashMap execute(HashMap<String,String> paramMap) throws Exception{
 	
 	String instanceName = (String)paramMap.get("instanceName");
 	String data = paramMap.toString();
-							
-	HttpURLConnection con = null; //finally 부분에서 close하기위해 try-catch문 밖에 선언
-	DataOutputStream dos = null; //finally 부분에서 close하기위해 try-catch문 밖에 선언
-	
-	try{
-		
-		String instanceUrl = getServerURL(instanceName); // instanceUrl 가져오기
-		
-		if(instanceUrl.contains("error") || StringUtils.isBlank(instanceUrl)){
-			resultMap.put("result","[서버 url 생성시 에러 발생] "+instanceUrl);
-		}else{
-			// Http Connection 생성
-			URL url = new URL(instanceUrl);
-			con = (HttpURLConnection)url.openConnection();
-			con.setUseCaches(false); // 연결이 캐시를 사용하는지 여부를 설정
-			con.setDoOutput(true);
-			con.setDoInput(true);
-			con.setRequestMethod("POST");
-			con.setRequestProperty("Content-Type","text/html; charset=utf-8");
-			con.setConnectTimeout(connectionTimeOut);
-			con.setReadTimeout(readTimeout);
 
-			dos = new DataOutputStream(con.getOutputStream());
-			dos.writeBytes(data);
-			dos.flush();
-			// HTTP Response
-			BufferedReader bin = new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8"));
-			String line = bin.readLine();
-			StringBuffer buf = new StringBuffer();
-			while(line != null){
-				buf.append(line).append("\n"); // 개행을위에 \n 추가
-				line=bin.readLine();
-			}
-			bin.close();
-		
-			String response = buf.toString();					
-			if(response != null){						
-				resultMap.put("result", response);
-			}
-		}			
-	}catch(ConnectException e){
-		resultMap.put("result", e.getMessage());	
-	}catch(IOException e){
-		resultMap.put("result", e.getMessage());	
-	}catch(Exception e){
-		resultMap.put("result", e.getMessage());	
-	}finally{
-		if(dos != null){
+	String instanceUrl = getServerURL(instanceName); // instanceUrl 가져오기
+	
+	if(instanceUrl.contains("error") || StringUtils.isBlank(instanceUrl)){
+		resultMap.put("result","[서버 url 생성시 에러 발생] "+instanceUrl);
+	}else{
+		// url 생성
+		URL url = new URL(instanceUrl);
+
+		// HttpS Connection 생성
+		if(StringUtils.startsWith(instanceUrl, "https")){
+			HttpsURLConnection con = null; //finally 부분에서 close하기위해 try-catch문 밖에 선언
+			DataOutputStream dos = null; //finally 부분에서 close하기위해 try-catch문 밖에 선언
+	
+/* 				1.TrustManager 구현:
+					TrustManager[] trustAllCerts 배열은 모든 서버 인증서를 신뢰하도록 설정
+					X509TrustManager의 checkClientTrusted와 checkServerTrusted 메서드는 
+					빈 구현으로 되어 있어 인증서 검증을 수행하지 않는다.
+				
+				2.SSLContext 생성 및 초기화:
+					SSLContext.getInstance("SSL")로 SSL/TLS 컨텍스트를 생성한다.
+					sc.init()에서 신뢰 관리자를 trustAllCerts로 설정합니다.
+
+				3.기본 SSLSocketFactory 설정:
+					HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory())를 통해 
+					모든 HttpsURLConnection 객체에 대해 이 SSL 설정을 사용하도록 만듭니다.
+
+		        4.HostnameVerifier 생성:
+			        - HostnameVerifier는 HTTPS 연결 중 호스트 이름(예: www.example.com)과 
+			                  서버의 인증서에 있는 CN(Common Name) 또는 SAN(Subject Alternative Name)을 비교하여 
+			        	   유효성을 확인하는 역할을 한다.
+			        	- 여기서는 모든 호스트 이름을 신뢰하도록 HostnameVerifier를 구현합니다.
+
+			    5.verify 메서드 구현:
+			        - verify 메서드는 호스트 이름과 인증서의 일치 여부를 확인하는 로직을 정의합니다.
+		        		- 여기서는 항상 true를 반환하여 모든 호스트 이름을 검증 없이 신뢰하도록 설정합니다.
+		        	
+		        	6.HostnameVerifier 설치:
+		        		- HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid)를 호출하여 
+		        		    모든 HttpsURLConnection 요청에서 기본적으로 이 allHostsValid를 사용하도록 설정합니다.
+		        		- 결과적으로 HTTPS 요청 중 인증서의 CN/SAN과 호스트 이름이 일치하지 않더라도 예외가 발생하지 않습니다.
+
+	 			7.HTTPS 연결:
+					HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();를 통해 HTTPS 요청을 수행합니다.
+
+	        		종합적으로 설명
+		        		이 로직은 HTTPS 연결에서 호스트 이름 검증을 무시하는 설정입니다. 
+		        		인증서의 CN/SAN이 URL의 호스트 이름과 일치하지 않아도 연결이 거부되지 않고 항상 성공합니다. */
 			try{
-				dos.close();
+					
+				// Create a trust manager that does not validate certificate chains
+		        TrustManager[] trustAllCerts = new TrustManager[] {new X509TrustManager() {
+		            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+		                return null;
+		            }
+		            public void checkClientTrusted(X509Certificate[] certs, String authType){
+		            }
+		            public void checkServerTrusted(X509Certificate[] certs, String authType){
+		            }
+		        }
+		        };
+		
+		        // Install the all-trusting trust manager
+		        SSLContext sc = SSLContext.getInstance("SSL");
+		        sc.init(null, trustAllCerts, new java.security.SecureRandom());
+		        HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+		
+		        // Create all-trusting host name verifier
+		        HostnameVerifier allHostsValid = new HostnameVerifier() {
+		            public boolean verify(String hostname, SSLSession session){
+		                return true;
+		            }
+		        };
+		
+		        // Install the all-trusting host verifier
+		        HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+				
+				con = (HttpsURLConnection)url.openConnection();
+				con.setUseCaches(false); // 연결이 캐시를 사용하는지 여부를 설정
+				con.setDoOutput(true);
+				con.setDoInput(true);
+				con.setRequestMethod("POST");
+				con.setRequestProperty("Content-Type","text/html; charset=utf-8");
+				con.setConnectTimeout(connectionTimeOut);
+				con.setReadTimeout(readTimeout);
+	
+				dos = new DataOutputStream(con.getOutputStream());
+				dos.writeBytes(data);
+				dos.flush();
+				// HTTP Response
+				BufferedReader bin = new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8"));
+				String line = bin.readLine();
+				StringBuffer buf = new StringBuffer();
+				while(line != null){
+					buf.append(line).append("\n"); // 개행을위에 \n 추가
+					line=bin.readLine();
+				}
+				bin.close();
+			
+				String response = buf.toString();					
+				if(response != null){						
+					resultMap.put("result", response);
+				}
+			}catch(ConnectException e){
+				resultMap.put("result", e.getMessage());	
 			}catch(IOException e){
-				resultMap.put("result", e.getMessage());
-				dos = null;
-			}
+				resultMap.put("result", e.getMessage());	
+			}catch(Exception e){
+				resultMap.put("result", e.getMessage());	
+			}finally{
+				if(dos != null){	 try{ dos.close(); }catch(IOException e){ resultMap.put("result", e.getMessage()); dos = null; }}
+				if(con != null){	 con.disconnect(); }
+			}	
+		}else{
+		// Http Connection 생성	
+			HttpURLConnection con = null; //finally 부분에서 close하기위해 try-catch문 밖에 선언
+			DataOutputStream dos = null; //finally 부분에서 close하기위해 try-catch문 밖에 선언
+	
+			try{
+
+				con = (HttpURLConnection)url.openConnection();
+				con.setUseCaches(false); // 연결이 캐시를 사용하는지 여부를 설정
+				con.setDoOutput(true);
+				con.setDoInput(true);
+				con.setRequestMethod("POST");
+				con.setRequestProperty("Content-Type","text/html; charset=utf-8");
+				con.setConnectTimeout(connectionTimeOut);
+				con.setReadTimeout(readTimeout);
+	
+				dos = new DataOutputStream(con.getOutputStream());
+				dos.writeBytes(data);
+				dos.flush();
+				// HTTP Response
+				BufferedReader bin = new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8"));
+				String line = bin.readLine();
+				StringBuffer buf = new StringBuffer();
+				while(line != null){
+					buf.append(line).append("\n"); // 개행을위에 \n 추가
+					line=bin.readLine();
+				}
+				bin.close();
+			
+				String response = buf.toString();					
+				if(response != null){						
+					resultMap.put("result", response);
+				}
+			}catch(ConnectException e){
+				resultMap.put("result", e.getMessage());	
+			}catch(IOException e){
+				resultMap.put("result", e.getMessage());	
+			}catch(Exception e){
+				resultMap.put("result", e.getMessage());	
+			}finally{
+				if(dos != null){	 try{ dos.close(); }catch(IOException e){ resultMap.put("result", e.getMessage()); dos = null; }}
+				if(con != null){	 con.disconnect(); }
+			}	
 		}
-		if(con != null){
-			con.disconnect();
-		}
-	}
+		
+	}			
+
 	return resultMap;
 }
 %>
@@ -230,7 +334,6 @@ $(document).ready(function(){
 			$('#engineInstName').hide();
 		}
 	})	
-	
 	
 	// 요청 후 받은 로그가 없으면 인스턴스명 초기화 및 resultData 초기화
 	var resultData = $('#resultData').val().slice(0,4);
