@@ -42,7 +42,7 @@ private String getServerURL(String instanceName) throws Exception{
 	//	   2. sql작성 후 Statement.executeQuery 실행 
 	//	   3. ResultSet 결과 받아서 return
 	Connection conn = null;
-	Statement stmt = null;
+	PreparedStatement stmt = null;
 	ResultSet rs = null;
 
 	try{
@@ -71,7 +71,11 @@ private String getServerURL(String instanceName) throws Exception{
 			if(StringUtils.equals("APIGW", serviceType)){
 				conUrl = "http://"+rs.getString("ip")+":"+rs.getString("port")+"/EngineLogViewer.jsp";					
 			}else{
-				conUrl = rs.getString("protocol")+"://"+rs.getString("ip")+":"+rs.getString("port")+"/monitoring/EngineLogViewer.jsp";
+				if(StringUtils.isBlank(rs.getString("protocol")) || StringUtils.isBlank(rs.getString("port"))){
+					conUrl = "error";
+				}else{
+					conUrl = rs.getString("protocol")+"://"+rs.getString("ip")+":"+rs.getString("port")+"/monitoring/EngineLogViewer.jsp";
+				}
 			}
 		}
 		return conUrl;
@@ -465,6 +469,7 @@ $(document).ready(function(){
 									String emsInstSql = "select prptygroupname code, prptygroupdesc name "
 											+ "from ngpown.tseairm23 "
 											+ "where prptygroupname <> 'Simulator' and prptygroupname <> 'null' "
+											+ "and prptygroupname like '%{%.%.%.%}' "
 											+ "order by prptygroupname asc ";
 									emsInstStmt = emsConn.prepareStatement(emsInstSql);
 									emsInstRs = emsInstStmt.executeQuery();
