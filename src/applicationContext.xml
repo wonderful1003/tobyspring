@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+					       http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+					       http://www.springframework.org/schema/aop
+					       http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+					       http://www.springframework.org/schema/tx
+					       http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+					       http://www.springframework.org/schema/context 
+						   http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+<!-- 	<bean id="userService" class="user.service.UserServiceTx"> -->
+<!-- 		<property name="transactionManager" ref="transactionManager"/> -->
+<!-- 		<property name="userService" ref="userServiceImpl"/> -->
+<!-- 	</bean> -->
+
+<!-- 	<bean id="userService" class="user.service.TxProxyFactoryBean"> -->
+<!-- 		<property name="target" ref="userServiceImpl"/> -->
+<!-- 		<property name="transactionManager" ref="transactionManager"/> -->
+<!-- 		<property name="pattern" value="upgradeLevels"/> -->
+<!-- 		<property name="serviceInterface" value="user.service.UserService"/> -->
+<!-- 	</bean> -->
+	
+<!-- 	<bean id="transactionPointcut" class="org.springframework.aop.support.NameMatchMethodPointcut"> -->
+<!-- 		<property name="mappedName" value="upgrade*"/> -->
+<!-- 	</bean> -->
+	
+<!-- 	<bean id="userService" class="org.springframework.aop.framework.ProxyFactoryBean"> -->
+<!-- 		<property name="target" ref="userServiceImpl"/> -->
+<!-- 		<property name="interceptorNames"> -->
+<!-- 			<list> -->
+<!-- 				<value>transactionAdvisor</value> -->
+<!-- 			</list> -->
+<!-- 		</property> -->
+<!-- 	</bean> -->
+
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+		<property name="driverClass" value="com.mysql.cj.jdbc.Driver"/>
+		<property name="url" value="jdbc:mysql://localhost:3306/test?serverTimezone=UTC&amp;characterEncoding=UTF-8"/>
+		<property name="username" value="root"/>
+		<property name="password" value="admin"/>	<!-- 을지로입구 -->
+<!-- 		<property name="password" value="qwer!2345"/>	양천향교 -->
+	</bean>
+	
+	<bean id="transactionManager" 
+			class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+		
+	<!-- aop -->
+<!-- 	<bean class = "org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/> -->
+
+<!-- 	<bean id="transactionAdvice" class="learningtest.proxy.TransactionAdvice"> -->
+<!-- 		<property name="transactionManager" ref="transactionManager"/> -->
+<!-- 	</bean> -->
+		
+<!-- 	<bean id="transactionPointcut" class="learningtest.proxy.NameMatchClassMethodPointcut"> -->
+<!-- 		<property name="mappedClassName" value="*ServiceImpl"/> -->
+<!-- 		<property name="mappedName" value="upgrade*"/> -->
+<!-- 	</bean> -->
+
+<!-- 	<bean id="transactionPointcut" class="org.springframework.aop.aspectj.AspectJExpressionPointcut"> -->
+<!-- 		<property name="expression" value="execution(* *..*ServiceImpl.upgrade*(..))"/> -->
+<!-- 	</bean> -->
+
+<!-- 	<bean id="transactionAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor"> -->
+<!-- 		<property name="advice" ref="transactionAdvice"/> -->
+<!-- 		<property name="pointcut" ref="transactionPointcut"/> -->
+<!-- 	</bean> -->
+
+<!-- 	<bean id="transactionAdvice"  -->
+<!-- 			class="org.springframework.transaction.interceptor.TransactionInterceptor"> -->
+<!-- 		<property name="transactionManager" ref="transactionManager"/> -->
+<!-- 		<property name="transactionAttributes"> -->
+<!-- 			<props> -->
+<!-- 				<prop key="get*">PROPAGATION_REQUIRED, readOnly</prop>			 -->
+<!-- 				<prop key="*">PROPAGATION_REQUIRED</prop>			 -->
+<!-- 			</props> -->
+<!-- 		</property> -->
+<!-- 	</bean> -->
+
+<!-- 	<aop:config> -->
+<!-- 		<aop:advisor advice-ref="transactionAdvice" pointcut="bean(*Service)" /> -->
+<!-- 	</aop:config> -->
+		
+<!-- 	<tx:advice id="transactionAdvice"> -->
+<!-- 		<tx:attributes> -->
+<!-- 			<tx:method name="get*" read-only="true"/> -->
+<!-- 			<tx:method name="*" /> -->
+<!-- 		</tx:attributes> -->
+<!-- 	</tx:advice> -->
+
+	<tx:annotation-driven />
+	
+	<!-- application components -->		
+<!-- 	<bean id="userDao" class="user.dao.UserDaoJdbc"> -->
+<!-- 		<property name="dataSource" ref="dataSource"/> -->
+<!-- 	</bean> -->
+
+	<bean id="userService" class="springbook.user.service.UserServiceImpl">
+		<property name="userDao" ref="userDao"/>
+		<property name="mailSender" ref="mailSender"/>
+	</bean>
+	
+	<bean id="testUserService" 
+	 	  class="springbook.user.service.UserServiceTest$TestUserServiceImpl"
+		  parent="userService"/>
+
+	<bean id="mailSender" class="springbook.user.service.DummyMailSender">
+		<property name="host" value="mail.server.com"/>
+	</bean>
+	
+	<!-- dao to xml -->		
+	<bean id="userDao" class="springbook.user.dao.UserDaoJdbc">
+		<property name="dataSource" ref="dataSource"/>
+		<property name="sqlService" ref="sqlService"/>
+	</bean>
+	
+<!-- 	<bean id="sqlService" class="user.sqlservice.SimpleSqlService"> -->
+<!-- 		<property name="sqlMap"> -->
+<!-- 			<map> -->
+<!-- 				<entry key="userAdd" value="insert into user(id, name, password,  -->
+<!-- 										level, login, recommend, email) values(?,?,?,?,?,?,?)" /> -->
+<!-- 				<entry key="userGet" value="select * from user where id =?" /> -->
+<!-- 				<entry key="userGetAll" value="select * from user order by id" /> -->
+<!-- 				<entry key="userDeleteAll" value="delete from user" /> -->
+<!-- 				<entry key="userGetCount" value="select count(*) from user" /> -->
+<!-- 				<entry key="userUpdate" value="update user set name =?, password = ?,  -->
+<!-- 								level = ?, login = ?, recommend = ?, email=? where id = ? " /> -->
+<!-- 			</map>  -->
+<!-- 		</property>	 -->
+<!-- 	</bean> -->
+
+	<bean id="sqlService" class="springbook.user.sqlservice.BaseSqlService">
+		<property name="sqlReader" ref="sqlReader"/>
+		<property name="sqlRegistry" ref="sqlRegistry"/>
+	</bean>
+	
+	<bean id="sqlReader" class="springbook.user.sqlservice.JaxbXmlSqlReader">
+		<property name="sqlmapFile" value="sqlmap.xml"/>
+	</bean>
+	
+	<bean id="sqlRegistry" class="springbook.user.sqlservice.HashMapSqlRegistry">
+	</bean>
+
+	<context:annotation-config />
+</beans>
