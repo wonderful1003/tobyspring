@@ -4,11 +4,16 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
 					       http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 	
-<!-- 	<bean id="unmarshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller"> -->
-<!-- 		<property name="contextPath" value="springbook.user.sqlservice.jaxb" /> -->
+	<bean id="sqlService" class="springbook.user.sqlservice.OxmSqlService">
+		<property name="unmarshaller" ref="unmarshaller" />
+	</bean>
+	
+	<bean id="unmarshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPath" value="springbook.user.sqlservice.jaxb" />
+	</bean>
+
+<!-- 	<bean id="unmarshaller" class="org.springframework.oxm.castor.CastorMarshaller"> -->
+<!-- 		<property name="mappingLocation" value="springbook/learningtest/spring/oxm/mapping.xml" /> -->
 <!-- 	</bean> -->
 	
-	<bean id="unmarshaller" class="org.springframework.oxm.castor.CastorMarshaller">
-		<property name="mappingLocation" value="springbook/learningtest/spring/oxm/mapping.xml" />
-	</bean>
 </beans>						   
