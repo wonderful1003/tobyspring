@@ -1,5 +1,5 @@
-package module.apigwModule;
-
-public interface HttpAdapterService {
-
-}
+//package module.apigwModule;
+//
+//public interface HttpAdapterService {
+//
+//}
