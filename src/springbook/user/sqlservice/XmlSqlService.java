@@ -54,9 +54,9 @@ public class XmlSqlService implements SqlService, SqlRegistry, SqlReader {
 	}
 
 	@Override
-	public String findSql(String key) throws SQLException {
+	public String findSql(String key) throws SqlNotFoundException {
 		String sql = sqlMap.get(key);
-		if(sql == null) throw new SQLException(key + "에 대한 sql을 찾을 수 없습니다.");
+		if(sql == null) throw new SqlRetrievalFailureException(key + "에 대한 sql을 찾을 수 없습니다.");
 		else return sql;
 	}
 
