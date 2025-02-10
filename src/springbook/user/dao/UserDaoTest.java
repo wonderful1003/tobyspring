@@ -15,17 +15,14 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import springbook.TestApplicationContext;
 import springbook.user.dao.UserDaoJdbc;
 import springbook.user.domain.Level;
 import springbook.user.domain.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations="/applicationContext.xml")
-@DirtiesContext
+@ContextConfiguration(classes=TestApplicationContext.class)
 public class UserDaoTest {
-	
-	@Autowired
-	private ApplicationContext context; 
 	
 	@Autowired
 	UserDaoJdbc dao;
