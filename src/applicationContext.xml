@@ -19,7 +19,6 @@
 					       http://www.springframework.org/schema/context 
 						   http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 	
-	<context:annotation-config />
 	
 	<!-- db -->
 	<bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
