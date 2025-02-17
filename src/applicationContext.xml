@@ -21,56 +21,56 @@
 	
 	
 	<!-- db -->
-	<bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
-		<property name="driverClass" value="com.mysql.cj.jdbc.Driver"/>
-		<property name="url" value="jdbc:mysql://localhost:3306/test?serverTimezone=UTC&amp;characterEncoding=UTF-8"/>
-		<property name="username" value="root"/>
+<!-- 	<bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource"> -->
+<!-- 		<property name="driverClass" value="com.mysql.cj.jdbc.Driver"/> -->
+<!-- 		<property name="url" value="jdbc:mysql://localhost:3306/test?serverTimezone=UTC&amp;characterEncoding=UTF-8"/> -->
+<!-- 		<property name="username" value="root"/> -->
 <!-- 		<property name="password" value="admin"/>	을지로입구 -->
-		<property name="password" value="qwer!2345"/>	<!-- 양천향교 -->
-	</bean>
+<!-- 		<property name="password" value="qwer!2345"/>	양천향교 -->
+<!-- 	</bean> -->
 	
-	<bean id="transactionManager" 
-			class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-		<property name="dataSource" ref="dataSource"/>
-	</bean>
+<!-- 	<bean id="transactionManager"  -->
+<!-- 			class="org.springframework.jdbc.datasource.DataSourceTransactionManager"> -->
+<!-- 		<property name="dataSource" ref="dataSource"/> -->
+<!-- 	</bean> -->
 
-	<!-- sql service -->
-	<bean id="sqlService" class="springbook.user.sqlservice.OxmSqlService">
-		<property name="unmarshaller" ref="unmarshaller" /> 
-		<property name="sqlRegistry" ref="sqlRegistry" />
-	</bean>
+<!-- 	 sql service --> 
+<!-- 	<bean id="sqlService" class="springbook.user.sqlservice.OxmSqlService"> -->
+<!-- 		<property name="unmarshaller" ref="unmarshaller" />  -->
+<!-- 		<property name="sqlRegistry" ref="sqlRegistry" /> -->
+<!-- 	</bean> -->
 	
-	<bean id="sqlRegistry" class="springbook.user.sqlservice.updatable.EmbeddedDbSqlRegistry">
-		<property name="dataSource" ref="embeddedDatabase" />
-	</bean>
+<!-- 	<bean id="sqlRegistry" class="springbook.user.sqlservice.updatable.EmbeddedDbSqlRegistry"> -->
+<!-- 		<property name="dataSource" ref="embeddedDatabase" /> -->
+<!-- 	</bean> -->
 
-	<jdbc:embedded-database id="embeddedDatabase" type="HSQL">
-		<jdbc:script location="classpath:springbook/user/sqlservice/updatable/sqlRegistrySchema.sql"/>
-	</jdbc:embedded-database>
+<!-- 	<jdbc:embedded-database id="embeddedDatabase" type="HSQL"> -->
+<!-- 		<jdbc:script location="classpath:springbook/user/sqlservice/updatable/sqlRegistrySchema.sql"/> -->
+<!-- 	</jdbc:embedded-database> -->
 			
-	<bean id="unmarshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
-		<property name="contextPath" value="springbook.user.sqlservice.jaxb" />
-	</bean>
+<!-- 	<bean id="unmarshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller"> -->
+<!-- 		<property name="contextPath" value="springbook.user.sqlservice.jaxb" /> -->
+<!-- 	</bean> -->
 			
 	<!-- aop -->
-	<tx:annotation-driven />
+<!-- 	<tx:annotation-driven /> -->
 	
 	<!-- application components -->		
-	<bean id="userDao" class="springbook.user.dao.UserDaoJdbc">
-		<property name="dataSource" ref="dataSource"/>
-		<property name="sqlService" ref="sqlService"/>
-	</bean>
+<!-- 	<bean id="userDao" class="springbook.user.dao.UserDaoJdbc"> -->
+<!-- 		<property name="dataSource" ref="dataSource"/> -->
+<!-- 		<property name="sqlService" ref="sqlService"/> -->
+<!-- 	</bean> -->
 
-	<bean id="userService" class="springbook.user.service.UserServiceImpl">
-		<property name="userDao" ref="userDao"/>
-		<property name="mailSender" ref="mailSender"/>
-	</bean>
+<!-- 	<bean id="userService" class="springbook.user.service.UserServiceImpl"> -->
+<!-- 		<property name="userDao" ref="userDao"/> -->
+<!-- 		<property name="mailSender" ref="mailSender"/> -->
+<!-- 	</bean> -->
 		
-	<bean id="testUserService" 
-	 	  class="springbook.user.service.UserServiceTest$TestUserServiceImpl"
-		  parent="userService"/>
+<!-- 	<bean id="testUserService"  -->
+<!-- 	 	  class="springbook.user.service.UserServiceTest$TestUserServiceImpl" -->
+<!-- 		  parent="userService"/> -->
 		  
-	<bean id="mailSender" class="springbook.user.service.DummyMailSender">
-		<property name="host" value="mail.server.com"/>
-	</bean>
+<!-- 	<bean id="mailSender" class="springbook.user.service.DummyMailSender"> -->
+<!-- 		<property name="host" value="mail.server.com"/> -->
+<!-- 	</bean> -->
 </beans>

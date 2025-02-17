@@ -145,15 +145,14 @@ public class UserServiceTest {
 		userService.add(users.get(1));
 	}
 
-	static class TestUserServiceImpl extends UserServiceImpl{
-		private String id = "madnite1";
-//		private String id = "";
+	public static class TestUserService extends UserServiceImpl {
+		private String id = "madnite1"; // users(3).getId()
 		
 		protected void upgradeLevel(User user) {
-			if (user.getId().equals(this.id)) throw new TestUserServiceException();
-			super.upgradeLevel(user);
+			if (user.getId().equals(this.id)) throw new TestUserServiceException();  
+			super.upgradeLevel(user);  
 		}
-		
+
 		public List<User> getAll() {
 			for(User user : super.getAll()) {
 				super.update(user);
