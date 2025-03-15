@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
@@ -36,39 +35,8 @@ import springbook.user.sqlservice.SqlRegistry;
 import springbook.user.sqlservice.updatable.EmbeddedDbSqlRegistry;
 
 @Configuration
-@EnableTransactionManagement
-@ComponentScan(basePackages = "springbook.user")
-@Import(SqlServiceContext.class)
-public class AppContext {
+public class SqlServiceContext {
 
-	@Autowired UserDao userDao;
-	
-	@Bean
-	public DataSource dataSource() {
-		
-		SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
-		
-		dataSource.setDriverClass(Driver.class);
-		dataSource.setUrl("jdbc:mysql://localhost:3306/test?serverTimezone=UTC&characterEncoding=UTF-8");
-		dataSource.setUsername("root");
-		dataSource.setPassword("qwer!2345");
-		
-		return dataSource;
-	}
-	
-	@Bean
-	public PlatformTransactionManager transactionManager() {
-		
-		DataSourceTransactionManager tm = new DataSourceTransactionManager();
-		tm.setDataSource(dataSource());
-		return tm;
-	}
-	
-	@Bean 
-	public UserDao userDao() {
-		return new UserDaoJdbc();
-	}
-	
 	/**
 	 * SQL서비스
 	 */
