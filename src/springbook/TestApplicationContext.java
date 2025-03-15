@@ -8,6 +8,7 @@ import javax.sql.DataSource;
 import org.hsqldb.Database;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
@@ -35,6 +36,7 @@ import springbook.user.sqlservice.updatable.EmbeddedDbSqlRegistry;
 
 @Configuration
 @EnableTransactionManagement
+@ComponentScan(basePackages = "springbook.user")
 public class TestApplicationContext {
 
 	@Bean
@@ -73,18 +75,20 @@ public class TestApplicationContext {
 		return new UserDaoJdbc();
 	}
 	
-	@Bean
-	public UserService userService() {
-		UserServiceImpl service = new UserServiceImpl();
-		service.setUserDao(userDao());
-		service.setMailSender(mailSender());
-		return service;
-	}
+	@Autowired UserDao userDao;
+	
+//	@Bean
+//	public UserService userService() {
+//		UserServiceImpl service = new UserServiceImpl();
+//		service.setUserDao(this.userDao);
+//		service.setMailSender(mailSender());
+//		return service;
+//	}
 	
 	@Bean
 	public UserService testUserService() {
 		TestUserService testService = new TestUserService();
-		testService.setUserDao(userDao());
+		testService.setUserDao(this.userDao);
 		testService.setMailSender(mailSender());
 		return testService;
 	}

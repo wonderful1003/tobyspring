@@ -22,6 +22,8 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
@@ -31,19 +33,24 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 
+import springbook.TestApplicationContext;
 import springbook.user.dao.UserDao;
 import springbook.user.domain.Level;
 import springbook.user.domain.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations="/applicationContext.xml")
+//@ContextConfiguration(locations="/applicationContext.xml")
+@ContextConfiguration(classes=TestApplicationContext.class)
 @Transactional
 @TransactionConfiguration(defaultRollback = false)
 public class UserServiceTest {
+
 	@Autowired 	UserService userService;
 	@Autowired	UserService testUserService;
+	
 	@Autowired	UserDao userDao;
 	@Autowired	MailSender mailSender;
 	@Autowired	PlatformTransactionManager transactionManager;
@@ -84,12 +91,12 @@ public class UserServiceTest {
 		userServiceImpl.upgradeLevels();
 		
 		List<User> updated = mockUserDao.getUpdated();
-		assertThat(updated.size(), is(2));
-		checkUserAndLevel(updated.get(0), "joytouch", Level.SILVER);
-		checkUserAndLevel(updated.get(1), "madnite1", Level.GOLD);
+		assertThat(updated.size(), is(3));
+		checkUserAndLevel(updated.get(0), "bumjin", Level.SILVER);
+		checkUserAndLevel(updated.get(1), "joytouch", Level.SILVER);
 		
 		List<String> request = mockMailSender.getRequests();
-		assertThat(request.size(), is(2));
+		assertThat(request.size(), is(3));
 		assertThat(request.get(0), is(users.get(1).getEmail()));
 		assertThat(request.get(1), is(users.get(3).getEmail()));
 	}

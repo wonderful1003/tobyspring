@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -25,7 +26,7 @@ import springbook.user.domain.User;
 public class UserDaoTest {
 	
 	@Autowired
-	UserDaoJdbc dao;
+	UserDao userDao;
 
 	private User user1;
 	private User user2;
@@ -41,17 +42,17 @@ public class UserDaoTest {
 	@Test
 	public void addAndGet() throws SQLException, ClassNotFoundException {
 		
-		dao.deleteAll(); 
-		assertThat(dao.getCount(), is(0)); 
+		userDao.deleteAll(); 
+		assertThat(userDao.getCount(), is(0)); 
 		
-		dao.add(user1); 
-		dao.add(user2); 
-		assertThat(dao.getCount(), is(2));
+		userDao.add(user1); 
+		userDao.add(user2); 
+		assertThat(userDao.getCount(), is(2));
 
-		User userget1 = dao.get(user1.getId()); 
+		User userget1 = userDao.get(user1.getId()); 
 		checkSameUser(userget1, user1);
 		
-		User userget2 = dao.get(user2.getId()); 
+		User userget2 = userDao.get(user2.getId()); 
 		checkSameUser(userget2, user2);
 		
 	}
@@ -63,46 +64,46 @@ public class UserDaoTest {
 		User user2 = new User("leegw700", "이길원", "springno2"); 
 		User user3 = new User("bumJin", "박범진", "springno3");
 			
-		dao.deleteAll();
+		userDao.deleteAll();
 		
-		assertThat(dao.getCount() , is(0)); 
+		assertThat(userDao.getCount() , is(0)); 
 
-		dao.add(user1);
-		assertThat(dao.getCount(), is(1)); 
+		userDao.add(user1);
+		assertThat(userDao.getCount(), is(1)); 
 		
-		dao.add(user2);
-		assertThat(dao.getCount() , is(2)); 
+		userDao.add(user2);
+		assertThat(userDao.getCount() , is(2)); 
 
-		dao.add(user3);
-		assertThat(dao.getCount() , is(3));
+		userDao.add(user3);
+		assertThat(userDao.getCount() , is(3));
 	}
 	
 	//@Test(expected=EmptyResultDataAccessException.class) 
 	public void getUserFailure() throws SQLException, ClassNotFoundException{ 
 
-		dao.deleteAll(); 
-		assertThat(dao.getCount(), is(0)); 
+		userDao.deleteAll(); 
+		assertThat(userDao.getCount(), is(0)); 
 		
-		dao.get("unknown_id");
+		userDao.get("unknown_id");
 	}
 	
 	@Test
 	public void getAll() throws ClassNotFoundException, SQLException {
-		dao.deleteAll();
+		userDao.deleteAll();
 		
-		dao.add(user1);
-		List<User> user1 = dao.getAll();	//gyumee
+		userDao.add(user1);
+		List<User> user1 = userDao.getAll();	//gyumee
 		assertThat(user1.size() , is(1));
 		checkSameUser(this.user1, user1.get(0));
 		
-		dao.add(user2);
-		List<User> user2 = dao.getAll();	//leegw700
+		userDao.add(user2);
+		List<User> user2 = userDao.getAll();	//leegw700
 		assertThat(user2.size() , is(2));
 		checkSameUser(this.user1, user2.get(0));
 		checkSameUser(this.user2, user2.get(1));
 
-		dao.add(user3);						//bumJin
-		List<User> user3 = dao.getAll();
+		userDao.add(user3);						//bumJin
+		List<User> user3 = userDao.getAll();
 		assertThat(user3.size() , is(3));
 		checkSameUser(this.user3, user3.get(0));
 		checkSameUser(this.user1, user3.get(1));
@@ -112,18 +113,18 @@ public class UserDaoTest {
 	
 	//@Test(expected=DataAccessException.class)
 	public void duplicateKey() throws ClassNotFoundException, SQLException {
-		dao.deleteAll();
+		userDao.deleteAll();
 		
-		dao.add(user1);
-		dao.add(user1);
+		userDao.add(user1);
+		userDao.add(user1);
 	}
 	
 	@Test
 	public void update() throws ClassNotFoundException, SQLException {
-		dao.deleteAll();
+		userDao.deleteAll();
 		
-		dao.add(user1);
-		dao.add(user2);
+		userDao.add(user1);
+		userDao.add(user2);
 		
 		user1.setName("오민규");
 		user1.setPassword("springno6");
@@ -132,11 +133,11 @@ public class UserDaoTest {
 		user1.setRecommend(999);
 		user1.setEmail("zxcvwe@naver.com");
 		
-		dao.update(user1);
+		userDao.update(user1);
 		
-		User user1update = dao.get(user1.getId());
+		User user1update = userDao.get(user1.getId());
 		checkSameUser(user1, user1update);
-		User user2same = dao.get(user2.getId());
+		User user2same = userDao.get(user2.getId());
 		checkSameUser(user2, user2same);
 	}
 	
