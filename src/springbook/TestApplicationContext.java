@@ -62,14 +62,15 @@ public class TestApplicationContext {
 	 * 애플리케이션 로직 & 테스트용 빈
 	 */
 	
-	@Autowired SqlService sqlService;
+//	@Autowired SqlService sqlService;
 	
 	@Bean 
 	public UserDao userDao() {
-		UserDaoJdbc dao = new UserDaoJdbc();
-		dao.setDataSource(dataSource());
-		dao.setSqlService(this.sqlService);
-		return dao;
+//		UserDaoJdbc dao = new UserDaoJdbc();
+//		dao.setDataSource(dataSource());
+//		dao.setSqlService(this.sqlService);
+//		return dao;
+		return new UserDaoJdbc();
 	}
 	
 	@Bean
