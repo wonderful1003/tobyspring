@@ -37,8 +37,10 @@ import springbook.user.sqlservice.updatable.EmbeddedDbSqlRegistry;
 @Configuration
 @EnableTransactionManagement
 @ComponentScan(basePackages = "springbook.user")
-public class TestApplicationContext {
+public class AppContext {
 
+	@Autowired UserDao userDao;
+	
 	@Bean
 	public DataSource dataSource() {
 		
@@ -60,42 +62,9 @@ public class TestApplicationContext {
 		return tm;
 	}
 	
-	/**
-	 * 애플리케이션 로직 & 테스트용 빈
-	 */
-	
-//	@Autowired SqlService sqlService;
-	
 	@Bean 
 	public UserDao userDao() {
-//		UserDaoJdbc dao = new UserDaoJdbc();
-//		dao.setDataSource(dataSource());
-//		dao.setSqlService(this.sqlService);
-//		return dao;
 		return new UserDaoJdbc();
-	}
-	
-	@Autowired UserDao userDao;
-	
-//	@Bean
-//	public UserService userService() {
-//		UserServiceImpl service = new UserServiceImpl();
-//		service.setUserDao(this.userDao);
-//		service.setMailSender(mailSender());
-//		return service;
-//	}
-	
-	@Bean
-	public UserService testUserService() {
-		TestUserService testService = new TestUserService();
-		testService.setUserDao(this.userDao);
-		testService.setMailSender(mailSender());
-		return testService;
-	}
-	
-	@Bean
-	public MailSender mailSender() {
-		return new DummyMailSender();
 	}
 	
 	/**
