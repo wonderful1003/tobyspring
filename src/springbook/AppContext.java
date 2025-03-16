@@ -12,9 +12,11 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.mail.MailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -38,11 +40,8 @@ import springbook.user.sqlservice.updatable.EmbeddedDbSqlRegistry;
 @Configuration
 @EnableTransactionManagement
 @ComponentScan(basePackages = "springbook.user")
-@Import({SqlServiceContext.class, TestAppContext.class, ProductionAppContext.class})
+@Import(SqlServiceContext.class)
 public class AppContext {
-
-	@Autowired UserDao userDao;
-	
 	@Bean
 	public DataSource dataSource() {
 		
@@ -55,7 +54,6 @@ public class AppContext {
 		
 		return dataSource;
 	}
-	
 	@Bean
 	public PlatformTransactionManager transactionManager() {
 		
@@ -64,42 +62,27 @@ public class AppContext {
 		return tm;
 	}
 	
-	@Bean 
-	public UserDao userDao() {
-		return new UserDaoJdbc();
+	@Configuration
+	@Profile("production")
+	public static class ProductionAppContext {
+		@Bean
+		public MailSender mailSender() {
+			JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+			mailSender.setHost("localhost");
+			return mailSender;
+		}
 	}
 	
-	/**
-	 * SQL서비스
-	 */
-	@Bean
-	public SqlService sqlService() {
-		OxmSqlService sqlService = new OxmSqlService();
-		sqlService.setUnmarshaller(unmarshaller());
-		sqlService.setSqlRegistry(sqlRegistry());
-		return sqlService;
+	@Configuration
+	@Profile("test")
+	public static class TestAppContext {
+		@Bean
+		public UserService testUserService() {
+			return new TestUserService();
+		}
+		@Bean
+		public MailSender mailSender() {
+			return new DummyMailSender();
+		}
 	}
-	
-	@Bean
-	public SqlRegistry sqlRegistry() {
-		EmbeddedDbSqlRegistry sqlRegistry = new EmbeddedDbSqlRegistry();
-		sqlRegistry.setDataSource(embeddedDatabase());
-		return sqlRegistry;
-	}
-	
-	@Bean
-	public Unmarshaller unmarshaller() {
-		Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-		marshaller.setContextPath("springbook.user.sqlservice.jaxb");
-		return marshaller;
-	}
-	
-	@Bean 
-	public DataSource embeddedDatabase() {
-		return new EmbeddedDatabaseBuilder()
-			.setName("embeddedDatabase")
-			.setType(HSQL)
-			.addScript("classpath:springbook/user/sqlservice/updatable/sqlRegistrySchema.sql")
-			.build();
-	}	
 }
