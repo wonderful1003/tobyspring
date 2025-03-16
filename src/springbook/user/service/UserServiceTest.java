@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
@@ -55,12 +56,14 @@ public class UserServiceTest {
 	
 	List<User> users;
 	
-//	@Autowired
-//	DataSource dataSource;
+	@Autowired DefaultListableBeanFactory bf;
 	
-	//@Autowired
-//	UserServiceImpl userServiceImpl;
-	
+	@Test
+	public void beans() {
+		for(String n : bf.getBeanDefinitionNames()) {
+			System.out.println("여기다 "+n + "\t "+ bf.getBean(n).getClass().getName());
+		}
+	}
 	
 	
 	@Before

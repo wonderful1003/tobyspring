@@ -10,6 +10,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -19,6 +21,7 @@ import springbook.user.domain.Level;
 import springbook.user.domain.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
+@ActiveProfiles("test")
 @ContextConfiguration(classes = AppContext.class)
 public class UserDaoTest {
 	
@@ -34,6 +37,15 @@ public class UserDaoTest {
 		this.user1 = new User("gyumee", "박성철", "springnol", Level.BASIC, 1, 0, "asdf@naver.com"); 
 		this.user2 = new User("leegw700", "이길원", "springno2", Level.SILVER, 55, 10, null); 
 		this.user3 = new User("bumJin", "박범진", "springno3", Level.GOLD, 100, 40, null);
+	}
+	
+	@Autowired DefaultListableBeanFactory bf;
+	
+	@Test
+	public void beans() {
+		for(String n : bf.getBeanDefinitionNames()) {
+			System.out.println("여기다 "+n + "\t "+ bf.getBean(n).getClass().getName());
+		}
 	}
 	
 	@Test
