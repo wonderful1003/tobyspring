@@ -31,7 +31,7 @@ import springbook.user.dao.UserDao;
 @Configuration
 @EnableTransactionManagement
 @ComponentScan(basePackages = "springbook.user")
-@Import(SqlServiceContext.class)
+@EnableSqlService
 @PropertySource("database.properties")
 public class AppContext implements SqlMapConfig{
 
@@ -44,12 +44,6 @@ public class AppContext implements SqlMapConfig{
 	public Resource getSqlMapResouce() {
 		return new ClassPathResource("sqlmap.xml", UserDao.class);
 	}
-	
-//	@Bean
-//	public SqlMapConfig sqlMapConfig() {
-//		return new UserSqlMapConfig();
-//	}  
-	
 	
 	@Bean
 	public static PropertySourcesPlaceholderConfigurer placeholderConfigurer() {
