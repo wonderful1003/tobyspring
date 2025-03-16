@@ -3,12 +3,14 @@ package springbook;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
@@ -30,21 +32,24 @@ import springbook.user.service.UserServiceTest.TestUserService;
 @PropertySource("database.properties")
 public class AppContext {
 
-	@Autowired Environment env;
+	@Value("${db.driverClass}") Class<? extends Driver> driverClass;
+	@Value("${db.url}") String url;
+	@Value("${db.username}") String username;
+	@Value("${db.password}") String password;
+	
+	@Bean
+	public static PropertySourcesPlaceholderConfigurer placeholderConfigurer() {
+		return new PropertySourcesPlaceholderConfigurer();
+	}
 	
 	@Bean
 	public DataSource dataSource() {
 		SimpleDriverDataSource ds = new SimpleDriverDataSource();
 		
-		try {
-			ds.setDriverClass((Class<? extends java.sql.Driver>)Class.forName(env.getProperty("db.driverClass")));
-		}
-		catch(ClassNotFoundException e) {
-			throw new RuntimeException(e);
-		}
-		ds.setUrl(env.getProperty("db.url"));
-		ds.setUsername(env.getProperty("db.username"));
-		ds.setPassword(env.getProperty("db.password"));
+		ds.setDriverClass(this.driverClass);
+		ds.setUrl(this.url);
+		ds.setUsername(this.username);
+		ds.setPassword(this.password);
 		
 		return ds;
 	}
