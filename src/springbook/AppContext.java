@@ -12,6 +12,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.mail.MailSender;
@@ -24,18 +26,30 @@ import com.mysql.jdbc.Driver;
 import springbook.user.service.DummyMailSender;
 import springbook.user.service.UserService;
 import springbook.user.service.UserServiceTest.TestUserService;
+import springbook.user.dao.UserDao;
 
 @Configuration
 @EnableTransactionManagement
 @ComponentScan(basePackages = "springbook.user")
 @Import(SqlServiceContext.class)
 @PropertySource("database.properties")
-public class AppContext {
+public class AppContext implements SqlMapConfig{
 
 	@Value("${db.driverClass}") Class<? extends Driver> driverClass;
 	@Value("${db.url}") String url;
 	@Value("${db.username}") String username;
 	@Value("${db.password}") String password;
+	
+	@Override
+	public Resource getSqlMapResouce() {
+		return new ClassPathResource("sqlmap.xml", UserDao.class);
+	}
+	
+//	@Bean
+//	public SqlMapConfig sqlMapConfig() {
+//		return new UserSqlMapConfig();
+//	}  
+	
 	
 	@Bean
 	public static PropertySourcesPlaceholderConfigurer placeholderConfigurer() {

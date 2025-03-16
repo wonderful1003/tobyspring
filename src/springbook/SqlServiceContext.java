@@ -37,14 +37,14 @@ import springbook.user.sqlservice.updatable.EmbeddedDbSqlRegistry;
 @Configuration
 public class SqlServiceContext {
 
-	/**
-	 * SQL서비스
-	 */
+	@Autowired SqlMapConfig sqlMapConfig;
+	
 	@Bean
 	public SqlService sqlService() {
 		OxmSqlService sqlService = new OxmSqlService();
 		sqlService.setUnmarshaller(unmarshaller());
 		sqlService.setSqlRegistry(sqlRegistry());
+		sqlService.setSqlmap(this.sqlMapConfig.getSqlMapResouce());
 		return sqlService;
 	}
 	
