@@ -27,6 +27,7 @@ import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
@@ -40,10 +41,8 @@ import springbook.user.domain.Level;
 import springbook.user.domain.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-//@ContextConfiguration(locations="/applicationContext.xml")
-@ContextConfiguration(classes ={TestAppContext.class, AppContext.class})
-@Transactional
-@TransactionConfiguration(defaultRollback = false)
+@ActiveProfiles("test")
+@ContextConfiguration(classes =AppContext.class)
 public class UserServiceTest {
 
 	@Autowired 	UserService userService;

@@ -19,7 +19,7 @@ import springbook.user.domain.Level;
 import springbook.user.domain.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestAppContext.class, AppContext.class})
+@ContextConfiguration(classes = AppContext.class)
 public class UserDaoTest {
 	
 	@Autowired
